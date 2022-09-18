@@ -124,4 +124,14 @@ RSpec.describe Customer, type: :model do
       expect(Customer.favorite_customers(merch_1.id)[4].transac_count).to eq(1)
     end
   end
+
+  describe 'Instance Methods' do
+    describe 'full_name' do
+      it "combines the customers first and last name" do
+        @customer = create(:customer)   
+
+        expect(@customer.full_name).to eq "#{@customer.first_name} #{@customer.last_name}"
+      end
+    end
+  end
 end

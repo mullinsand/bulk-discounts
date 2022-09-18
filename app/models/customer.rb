@@ -13,4 +13,9 @@ class Customer < ApplicationRecord
       .order("transac_count DESC")
       .limit(5)
   end
+
+  def full_name
+    name = [first_name, last_name]
+    name.join(" ")
+  end
 end
