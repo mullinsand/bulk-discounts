@@ -8,4 +8,8 @@ class Invoice < ApplicationRecord
   has_many :transactions
   has_many :invoice_items
   has_many :items, through: :invoice_items
+
+  def find_invoice_item(invoice, item)
+    InvoiceItem.where(invoice: invoice, item: item)
+  end
 end

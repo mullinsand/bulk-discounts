@@ -11,7 +11,7 @@
   <% @invoice.items.each do |item| %>
     <div id="item-<%=item.id%>">
       Item Name: <%= item.name %>
-      Item Quantity: <%= @invoice.find_invoice_item(@invoice.id, item.id) %>
+      Item Quantity: <%= @invoice.find_invoice_item(@invoice, item) %>
       Item Price: $<%= ((item.unit_price.to_f) / 100).round(3) %>
       Invoice Status: <%=  %>
   <% end %>

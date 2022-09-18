@@ -22,7 +22,7 @@ RSpec.describe 'Invoice Show Page' do
       @inv_item_3 = create(:invoice_item, invoice: @invs_0[2], item: @items[2]) #this will always belong to @merchants[0]      
 
       @inv_item_4 = create(:invoice_item, invoice: @invs_2[0], item: @items2[3]) #this will always belong to @merchants[0]      
-      @inv_item_5 = create(:invoice_item, invoice: @invs_2[1], item: @items2[6]) #this will always belong to @merchants[0]      
+      @inv_item_5 = create(:invoice_item, invoice: @invs_1[1], item: @items2[6]) #this will always belong to @merchants[0]      
     end
 
     it 'can navigate to the show page from the index page' do
