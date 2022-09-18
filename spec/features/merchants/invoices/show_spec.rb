@@ -58,7 +58,7 @@ RSpec.describe 'Invoice Show Page' do
         end
       end
 
-      within "items" do
+      within ".items" do
         expect(page).to_not have_content("#{@invs_2[0].id}")
         expect(page).to_not have_content("#{@invs_2[1].id}")
       end
