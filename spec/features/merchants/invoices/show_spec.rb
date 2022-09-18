@@ -61,7 +61,6 @@ RSpec.describe 'Invoice Show Page' do
         expect(page).to_not have_content("#{@invs_2[0].id}")
         expect(page).to_not have_content("#{@invs_2[1].id}")
       end
-      save_and_open_page
     end
   end
 end
