@@ -63,6 +63,31 @@ RSpec.describe Invoice, type: :model do
           expect(@invs_0[1].find_invoice_item(@invs_0[1], @items[1])).to eq [@inv_item_2]
       end
     end
+
+    describe '.revenue' do
+      
+      before :each do
+        @merchant = create(:merchant)
+
+        @customer = create(:customer)
+        
+        @item = create(:item, merchant: @merchant, unit_price: 100)
+        @item_2 = create(:item, merchant: @merchant, unit_price: 100)
+
+        @invoice = create(:invoice, customer: @customer, status: 1)
+
+        @invoice_items = create(:invoice_item, item: @item, invoice: @invoice, unit_price: @item.unit_price, quantity: 1)
+        @invoice_items = create(:invoice_item, item: @item_2, invoice: @invoice, unit_price: @item_2.unit_price, quantity: 1)
+      end
+
+      it 'can calculate total revenue of each item' do
+        expect(@invoice.revenue_order).to eq [@item, @item_2]
+      end
+
+      it 'can find the sum of each items total revenur for the invoice' do
+        expect(@invoice.total_revenue).to eq 200
+      end
+    end
   end
 
 end

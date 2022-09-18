@@ -12,4 +12,16 @@ class Invoice < ApplicationRecord
   def find_invoice_item(invoice, item)
     InvoiceItem.where(invoice: invoice, item: item)
   end
+
+  def revenue_order
+    items.
+    joins(:invoice_items).
+    select('items.*, sum(invoice_items.quantity *invoice_items.unit_price) as revenue').
+    group('items.id').
+    order(revenue: :desc)
+  end
+
+  def total_revenue
+    revenue_order.collect {|item| item.revenue }.sum
+  end
 end
