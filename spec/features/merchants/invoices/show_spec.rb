@@ -19,9 +19,8 @@ RSpec.describe 'Invoice Show Page' do
   
       @inv_item_1 = create(:invoice_item, invoice: @invs_0[0], item: @items[0]) #this will always belong to @merchants[0]
       @inv_item_2 = create(:invoice_item, invoice: @invs_0[1], item: @items[1]) #this will always belong to @merchants[0]
-      @inv_item_3 = create(:invoice_item, invoice: @invs_0[2], item: @items[2]) #this will always belong to @merchants[0]      
-
-      @inv_item_4 = create(:invoice_item, invoice: @invs_2[0], item: @items2[3]) #this will always belong to @merchants[0]      
+      @inv_item_3 = create(:invoice_item, invoice: @invs_0[0], item: @items[2]) #this will always belong to @merchants[0]      
+      @inv_item_4 = create(:invoice_item, invoice: @invs_0[0], item: @items[3]) #this will always belong to @merchants[0]      
       @inv_item_5 = create(:invoice_item, invoice: @invs_1[1], item: @items2[6]) #this will always belong to @merchants[0]      
     end
 
@@ -62,7 +61,7 @@ RSpec.describe 'Invoice Show Page' do
         expect(page).to_not have_content("#{@invs_2[0].id}")
         expect(page).to_not have_content("#{@invs_2[1].id}")
       end
+      save_and_open_page
     end
-
   end
 end
