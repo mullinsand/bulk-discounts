@@ -10,9 +10,9 @@
 <div class="items">
   <% @invoice.items.each do |item| %>
     <div id="item-<%=item.id%>">
-      Item Name: <%= item.name %>
-      Item Quantity: <%= @invoice.find_invoice_item(@invoice, item).first.quantity %>
-      Item Price: $<%= ((item.unit_price.to_f) / 100).round(3) %>
-      Invoice Status: <%= @invoice.find_invoice_item(@invoice, item).first.status %>
+      Item Name: <%= item.name %> <br>
+      Item Quantity: <%= @invoice.find_invoice_item(@invoice, item).first.quantity %> <br>
+      Item Price: $<%= ((item.unit_price.to_f) / 100).round(3) %> <br>
+      Invoice Status: <%= @invoice.find_invoice_item(@invoice, item).first.status %> <br>
   <% end %>
 </div>
