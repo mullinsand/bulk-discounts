@@ -38,7 +38,7 @@ RSpec.describe Invoice, type: :model do
   end
 
   describe 'instance methods' do
-    describe 'find_invoice_item(invoice_id, item_id)' do
+    describe 'find_invoice_item(invoice, item)' do
       it 'can find an instance of invoice_item' do
           @merchant = create(:merchant)
           @merchant2 = create(:merchant)
