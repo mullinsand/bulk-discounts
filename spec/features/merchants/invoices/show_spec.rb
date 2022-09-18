@@ -110,11 +110,12 @@ RSpec.describe 'Invoice Show Page' do
 
       within ".items" do
         within "#item-#{@item.id}" do
+          expect(page).to have_content("Pending")
           select 'Packaged', from: "status"
           click_button 'Submit'
           expect(current_path).to eq merchant_invoice_path(@merchant, @invoice)
-          expect(page).to_not have_content "Pending"
-          expect(page).to have_content "Packaged"
+          expect(page).to_not have_content("Pending")
+          expect(page).to have_content("Packaged")
         end
       end
     end
@@ -124,11 +125,12 @@ RSpec.describe 'Invoice Show Page' do
 
       within ".items" do
         within "#item-#{@item_3.id}" do
+          expect(page).to have_content("Shipped")
           select 'Pending', from: "status"
           click_button 'Submit'
           expect(current_path).to eq merchant_invoice_path(@merchant, @invoice)
-          expect(page).to_not have_content "Shipped"
-          expect(page).to have_content "Pending"
+          expect(page).to_not have_content("Shipped")
+          expect(page).to have_content("Pending")
         end
       end
     end
@@ -138,13 +140,16 @@ RSpec.describe 'Invoice Show Page' do
 
       within ".items" do
         within "#item-#{@item_2.id}" do
+          expect(page).to have_content("Packaged")
           select 'Shipped', from: "status"
           click_button 'Submit'
           expect(current_path).to eq merchant_invoice_path(@merchant, @invoice)
-          expect(page).to_not have_content "Packaged"
-          expect(page).to have_content "Shipped"
+          expect(page).to_not have_content("Packaged")
+          expect(page).to have_content("Shipped")
         end
       end
     end
+
   end
+
 end
