@@ -83,7 +83,6 @@ RSpec.describe 'The Admin Invoice Show' do
 
     it 'shows all invoice item prices' do
       visit admin_invoice_path(@invoices[2])
-      save_and_open_page
       within("#all_invoice_items") do
         @inv_items_2.each do |ii|
           within("#inv_item_#{ii.id}") do
