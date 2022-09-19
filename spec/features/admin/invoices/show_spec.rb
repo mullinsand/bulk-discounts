@@ -7,7 +7,6 @@ RSpec.describe 'The Admin Invoice Show' do
     @inv_items_0 = create_list(:invoice_item, 5, invoice: @invoices[0])
     @inv_items_1 = create_list(:invoice_item, 5, invoice: @invoices[1])
     @inv_items_2 = create_list(:invoice_item, 5, invoice: @invoices[2])
-    
     visit admin_invoice_path(@invoices[0])
   end
   
@@ -68,7 +67,6 @@ RSpec.describe 'The Admin Invoice Show' do
         @inv_items_1.each do |ii|
           within("#inv_item_#{ii.id}") do
             expect(page).to have_content(ii.quantity)
-            expect(page).to_not have_content(@inv_items_0[2].quantity)
           end
         end
       end
@@ -76,10 +74,11 @@ RSpec.describe 'The Admin Invoice Show' do
 
     it 'shows all invoice item prices' do
       visit admin_invoice_path(@invoices[2])
+      save_and_open_page
       within("#all_invoice_items") do
         @inv_items_2.each do |ii|
           within("#inv_item_#{ii.id}") do
-            expect(page).to have_content(ii.unit_price)
+            expect(page).to have_content(ii.item.current_price)
             expect(page).to_not have_content(@inv_items_0[3].unit_price)
           end
         end
@@ -97,4 +96,9 @@ RSpec.describe 'The Admin Invoice Show' do
       end
     end
   end
+
+  describe 'total revenue section' do
+
+  end
+
 end

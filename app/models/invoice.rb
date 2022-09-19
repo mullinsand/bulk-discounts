@@ -25,6 +25,4 @@ class Invoice < ApplicationRecord
   def total_invoice_revenue_dollars 
     total_invoice_revenue.to_f / 100
   end
-
-
 end
