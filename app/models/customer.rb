@@ -13,4 +13,14 @@ class Customer < ApplicationRecord
       .order("transac_count DESC")
       .limit(5)
   end
+
+  def self.top_five_overall_cust
+    Customer.select("customers.*", "count(transactions.*) as transac_count")
+    .joins(invoices: :transactions)
+    .where("transactions.result = 0")
+    .group(:id)
+    .order("transac_count DESC")
+    .limit(5)
+  end
+
 end

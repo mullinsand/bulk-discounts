@@ -9,4 +9,8 @@ class InvoiceItem < ApplicationRecord
 
   belongs_to :item
   belongs_to :invoice
+
+  def self.unshipped_invoice_items
+    where.not(status: 2)
+  end
 end
