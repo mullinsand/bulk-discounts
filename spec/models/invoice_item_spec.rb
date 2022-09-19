@@ -31,4 +31,19 @@ RSpec.describe InvoiceItem, type: :model do
     #calling parents: inv_item.item.merchant
   end
 
+  describe "class methods" do
+    describe "#unshipped_invoice_items" do
+      it 'returns all invoice items with a status of pending or packaged' do
+        inv_items_pending = create_list(:invoice_item, 5, status: 0)
+        inv_items_packaged = create_list(:invoice_item, 5, status: 1)
+        inv_items_shipped = create_list(:invoice_item, 5, status: 2)
+        all_inv_items = InvoiceItem.all
+        
+        all_inv_items.unshipped_invoice_items.each do |ii|
+          expect(ii.status).to_not eq("Shipped")
+        end
+        expect(InvoiceItem.unshipped_invoice_items.count).to eq(10)
+      end
+    end
+  end
 end
