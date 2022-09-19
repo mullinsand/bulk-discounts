@@ -22,6 +22,7 @@ class Invoice < ApplicationRecord
     items.
     joins(:invoice_items).
     sum('invoice_items.quantity * invoice_items.unit_price')
+  end
 
   def self.incomplete_invoices_sorted
      joins(:invoice_items)
