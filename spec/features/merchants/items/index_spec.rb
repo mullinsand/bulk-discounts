@@ -230,6 +230,8 @@ RSpec.describe 'Merchants Items Index' do
         end
       end
       item = Item.find(@item1.id)
+
+      expect(current_path).to eq(merchant_items_path(@merchant))
       expect(item.status).to eq "Disabled"
     end
 
@@ -243,6 +245,8 @@ RSpec.describe 'Merchants Items Index' do
         end
       end
       item = Item.find(@item4.id)
+      
+      expect(current_path).to eq(merchant_items_path(@merchant))
       expect(item.status).to eq "Enabled"
     end
 
