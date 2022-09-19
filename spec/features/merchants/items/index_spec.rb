@@ -246,6 +246,7 @@ RSpec.describe 'Merchants Items Index' do
       expect(item.status).to eq "Enabled"
     end
 
+
   end
 end
 
