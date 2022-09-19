@@ -38,7 +38,7 @@ RSpec.describe Invoice, type: :model do
   end
 
   describe 'instance methods' do
-    describe 'find_invoice_item(invoice, item)' do
+    describe 'find_invoice_item_quantity(invoice, item)' do
       it 'can find an instance of invoice_item_quantity' do
           @merchant = create(:merchant)
           @merchant2 = create(:merchant)
@@ -64,7 +64,7 @@ RSpec.describe Invoice, type: :model do
       end
     end
 
-    describe 'find_invoice_item(invoice, item)' do
+    describe 'find_invoice_item_status(invoice, item)' do
       it 'can find an instance of invoice_item_quantity' do
           @merchant = create(:merchant)
           @merchant2 = create(:merchant)
