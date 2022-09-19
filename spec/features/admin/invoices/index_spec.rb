@@ -12,23 +12,15 @@ RSpec.describe 'the Admin Invoices Index' do
     end
   end
 
-  # it 'each id links to the admin invoice show page' do
-  #   within "#all_invoices" do
-  #     @invoices.each do |inv|
-  #       within "inv_#{inv.id}" do
-  #         click_link(inv.id)
-  #         expect(current_path).to eq(admin_invoice_path(inv.id))
-  #       end
-  #     end
-  #   end
-  # end
-
   it 'each id links to the admin invoice show page' do
-    click_link(@invoices[0].id)
-    expect(current_path).to eq(admin_invoice_path(@invoices[0].id))
+    within "#all_invoices" do
+      @invoices.each do |inv|
+        within "#inv_#{inv.id}" do
+          click_link("#{inv.id}")
+          expect(current_path).to eq(admin_invoice_path(inv.id))
+          visit admin_invoices_path
+        end
+      end
+    end
   end
-  
-
-
-
 end
