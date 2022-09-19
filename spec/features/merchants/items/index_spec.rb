@@ -192,4 +192,36 @@ RSpec.describe 'Merchants Items Index' do
     end
 
   end
+
+  describe 'Merchant Item Enable/Disable' do
+
+    before :each do
+      @merchant = create(:merchant)
+      @customers = create_list(:customer, 3)
+
+      @cus1_invoice = @customers[0].invoices.create(attributes_for(:invoice))
+      @cus2_invoice = @customers[1].invoices.create(attributes_for(:invoice))
+      @cus3_invoice = @customers[2].invoices.create(attributes_for(:invoice))
+     
+      @inv1_trans = @cus1_invoice.transactions.create(attributes_for(:transaction, result: 0))
+      @inv2_trans = @cus2_invoice.transactions.create(attributes_for(:transaction, result: 0))
+      @inv3_trans = @cus3_invoice.transactions.create(attributes_for(:transaction, result: 0))
+
+      @item1 = @merchant.items.create(attributes_for(:item))
+      @item2 = @merchant.items.create(attributes_for(:item))
+      @item3 = @merchant.items.create(attributes_for(:item))
+      @item4 = @merchant.items.create(attributes_for(:item))
+      @item5 = @merchant.items.create(attributes_for(:item))
+
+      @inv_item1 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item1.id, quantity: 1, unit_price: @item1.unit_price)
+      @inv_item2 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item2.id, quantity: 1, unit_price: @item2.unit_price)
+      @inv_item3 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item3.id, quantity: 1, unit_price: @item3.unit_price)
+      @inv_item4 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item4.id, quantity: 1, unit_price: @item4.unit_price)
+      @inv_item5 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item5.id, quantity: 1, unit_price: @item5.unit_price)
+    end
+
+    it 'can enable' do
+      visit merchant_items_path(@merchant)
+    end
+  end
 end
