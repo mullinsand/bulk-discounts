@@ -27,5 +27,13 @@ class Merchant < ApplicationRecord
   def top_five_items
     items_sorted_by_revenue.successful_transactions.limit(5)
   end
+
+  def enabled_items
+    items.where(status: 0)
+  end
+
+  def disabled_items
+    items.where(status: 1)
+  end
 end
 

@@ -104,6 +104,72 @@ RSpec.describe Merchant, type: :model do
         expect(merchant1.top_five_items).to eq [item6, item5, item1, item2, item3]
       end
     end
+
+    describe 'enabled_items' do
+
+      before :each do
+        @merchant = create(:merchant)
+        @customers = create_list(:customer, 3)
+  
+        @cus1_invoice = @customers[0].invoices.create(attributes_for(:invoice))
+        @cus2_invoice = @customers[1].invoices.create(attributes_for(:invoice))
+        @cus3_invoice = @customers[2].invoices.create(attributes_for(:invoice))
+       
+        @inv1_trans = @cus1_invoice.transactions.create(attributes_for(:transaction, result: 0))
+        @inv2_trans = @cus2_invoice.transactions.create(attributes_for(:transaction, result: 0))
+        @inv3_trans = @cus3_invoice.transactions.create(attributes_for(:transaction, result: 0))
+  
+        @item1 = @merchant.items.create(attributes_for(:item, status: 0))
+        @item2 = @merchant.items.create(attributes_for(:item, status: 0))
+        @item3 = @merchant.items.create(attributes_for(:item, status: 0))
+        @item4 = @merchant.items.create(attributes_for(:item, status: 0))
+        @item5 = @merchant.items.create(attributes_for(:item, status: 0))
+  
+        @inv_item1 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item1.id, quantity: 1, unit_price: @item1.unit_price)
+        @inv_item2 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item2.id, quantity: 1, unit_price: @item2.unit_price)
+        @inv_item3 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item3.id, quantity: 1, unit_price: @item3.unit_price)
+        @inv_item4 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item4.id, quantity: 1, unit_price: @item4.unit_price)
+        @inv_item5 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item5.id, quantity: 1, unit_price: @item5.unit_price)
+      end
+
+      it 'can sort the enabled items' do
+        expect(@merchant.enabled_items).to eq [@item1, @item2, @item3, @item4, @item5]
+      end
+
+    end
+
+    describe 'disabled_items' do
+
+      before :each do
+        @merchant = create(:merchant)
+        @customers = create_list(:customer, 3)
+  
+        @cus1_invoice = @customers[0].invoices.create(attributes_for(:invoice))
+        @cus2_invoice = @customers[1].invoices.create(attributes_for(:invoice))
+        @cus3_invoice = @customers[2].invoices.create(attributes_for(:invoice))
+       
+        @inv1_trans = @cus1_invoice.transactions.create(attributes_for(:transaction, result: 0))
+        @inv2_trans = @cus2_invoice.transactions.create(attributes_for(:transaction, result: 0))
+        @inv3_trans = @cus3_invoice.transactions.create(attributes_for(:transaction, result: 0))
+  
+        @item1 = @merchant.items.create(attributes_for(:item, status: 1))
+        @item2 = @merchant.items.create(attributes_for(:item, status: 1))
+        @item3 = @merchant.items.create(attributes_for(:item, status: 1))
+        @item4 = @merchant.items.create(attributes_for(:item, status: 1))
+        @item5 = @merchant.items.create(attributes_for(:item, status: 1))
+  
+        @inv_item1 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item1.id, quantity: 1, unit_price: @item1.unit_price)
+        @inv_item2 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item2.id, quantity: 1, unit_price: @item2.unit_price)
+        @inv_item3 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item3.id, quantity: 1, unit_price: @item3.unit_price)
+        @inv_item4 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item4.id, quantity: 1, unit_price: @item4.unit_price)
+        @inv_item5 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item5.id, quantity: 1, unit_price: @item5.unit_price)
+      end
+
+      it 'can sort the disabled items' do
+        expect(@merchant.disabled_items).to eq [@item1, @item2, @item3, @item4, @item5]
+      end
+
+    end
   end
 
   it 'instantiates with Factorybot' do

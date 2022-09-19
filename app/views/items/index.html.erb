@@ -29,8 +29,19 @@ p.groove {border-style: groove;}
   </ol>
 </div>
 
-<div class="items">
-  <% @merchant.items.each do |item| %>
+<div class="enabled_items">
+  <% @merchant.enabled_items.each do |item| %>
+    <div id="item-<%=item.id%>">
+      <%= link_to item.name, merchant_item_path(@merchant, item) %> <br>
+    </div>
+  <% end %>
+</div>
+<br>
+<br>
+<br>
+<br>
+<div class="disabled_items">
+  <% @merchant.disabled_items.each do |item| %>
     <div id="item-<%=item.id%>">
       <%= link_to item.name, merchant_item_path(@merchant, item) %> <br>
     </div>

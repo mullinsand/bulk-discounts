@@ -220,8 +220,22 @@ RSpec.describe 'Merchants Items Index' do
       @inv_item5 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item5.id, quantity: 1, unit_price: @item5.unit_price)
     end
 
-    it 'can enable' do
+    it 'can enable an item' do
       visit merchant_items_path(@merchant)
+      
+      within ".items" do
+        within "#item-#{@item1.id}" do
+          
+        end
+      end
     end
   end
 end
+
+# <div class="items">
+#   <% @merchant.items.each do |item| %>
+#     <div id="item-<%=item.id%>">
+#       <%= link_to item.name, merchant_item_path(@merchant, item) %> <br>
+#     </div>
+#   <% end %>
+# </div>
