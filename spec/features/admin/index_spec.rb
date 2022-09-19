@@ -113,15 +113,31 @@ RSpec.describe 'admin dashboard' do
       end
     end
 
-  describe 'links'
-    it 'has a link to the Admin Merchant Index' do
-      click_link("Merchant Index")
-      expect(current_path).to eq(admin_merchants_path)
+    it 'each invoice id links to the invoices admin invoice show page' do
+      within("#incomplete_invoices") do
+        expect(page).to have_link("#{@invoices[1].id}")
+        expect(page).to have_link("#{@invoices[3].id}")
+        expect(page).to_not have_link("#{@invoices[0].id}")
+
+        click_link("#{@invoices[1].id}")
+        expect(current_path).to eq(admin_invoice_path(@invoices[1].id))
+      end
     end
+
+  describe 'links' do
+    
+    it 'has a link to the Admin Merchant Index' do
+      within("#global_links") do
+        click_link("Merchant Index")
+        expect(current_path).to eq(admin_merchants_path)
+    end
+  end
 
     it 'has a link to the Admin Invoice Index' do
-      click_link("Invoice Index")
-      expect(current_path).to eq(admin_invoices_path)
+      within("#global_links") do
+        click_link("Invoice Index")
+        expect(current_path).to eq(admin_invoices_path)
+      end
     end
-
   end
+end

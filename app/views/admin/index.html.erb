@@ -1,5 +1,10 @@
 <h1> Admin Dashboard </h1>
 
+<section id ="global_links">
+<%= link_to "Merchant Index", admin_merchants_path %>
+<%= link_to "Invoice Index", admin_invoices_path  %>
+</section>
+
 <section id = "favorite_customers" >
 <h2> Top 5 Customers Overall </h2>
 
@@ -13,10 +18,7 @@
 <h2> Incomplete Invoices </h2>
 
 <% @incomplete_invoices.each do |inv| %>
- <li id ="inc_inv_<%=inv.id%>" > Invoice ID: <%= inv.id %> Invoice Date: <%= inv.created_at.strftime("%A, %B %d, %Y") %> </li>
+ <li id ="inc_inv_<%=inv.id%>" > Invoice ID: <%= link_to inv.id, admin_invoice_path(inv.id) %> Invoice Date: <%= inv.created_at.strftime("%A, %B %d, %Y") %> </li>
 
 <% end %>
 </section>
-
-<%= link_to "Merchant Index", admin_merchants_path %>
-<%= link_to "Invoice Index", admin_invoices_path  %> 
