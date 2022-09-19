@@ -14,7 +14,7 @@ class InvoiceItemsController < ApplicationController
       params[:status] = 0
     elsif params[:status] == "Packaged"
       params[:status] = 1
-    else # == "Shipped"
+    elsif == "Shipped"
       params[:status] = 2
     end
     params.permit(:item_id, :invoice_id, :status )
