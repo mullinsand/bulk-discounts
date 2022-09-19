@@ -27,6 +27,11 @@ class ItemsController < ApplicationController
   private
 
   def item_params
-    params.permit(:name, :description, :unit_price)
+      if params[:status] == "0"
+        params[:status] = 0
+      elsif params[:status] == "1"
+        params[:status] = 1
+      end
+    params.permit(:name, :description, :unit_price, :status)
   end
 end

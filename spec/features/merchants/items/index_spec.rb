@@ -14,7 +14,7 @@ RSpec.describe 'Merchants Items Index' do
 
       visit merchant_items_path(merch1)
       
-      within '.items' do
+      within '.disabled_items' do
         expect(page).to have_content("#{item1.name}")
         expect(page).to have_content("#{item2.name}")
         expect(page).to_not have_content("#{item3.name}")
@@ -207,9 +207,9 @@ RSpec.describe 'Merchants Items Index' do
       @inv2_trans = @cus2_invoice.transactions.create(attributes_for(:transaction, result: 0))
       @inv3_trans = @cus3_invoice.transactions.create(attributes_for(:transaction, result: 0))
 
-      @item1 = @merchant.items.create(attributes_for(:item))
-      @item2 = @merchant.items.create(attributes_for(:item))
-      @item3 = @merchant.items.create(attributes_for(:item))
+      @item1 = @merchant.items.create(attributes_for(:item, status: 0))
+      @item2 = @merchant.items.create(attributes_for(:item, status: 0))
+      @item3 = @merchant.items.create(attributes_for(:item, status: 0))
       @item4 = @merchant.items.create(attributes_for(:item))
       @item5 = @merchant.items.create(attributes_for(:item))
 
@@ -223,12 +223,30 @@ RSpec.describe 'Merchants Items Index' do
     it 'can enable an item' do
       visit merchant_items_path(@merchant)
       
-      within ".items" do
+      within ".enabled_items" do
         within "#item-#{@item1.id}" do
-          
+          expect(page).to have_button("Disable")
+          click_button "Disable"
         end
       end
+      item = Item.find(@item1.id)
+      expect(item.status).to eq "Disabled"
     end
+
+    it 'can disable an item' do
+      visit merchant_items_path(@merchant)
+      
+      within ".disabled_items" do
+        within "#item-#{@item4.id}" do
+          expect(page).to have_button("Enable")
+          click_button "Enable"
+        end
+      end
+      item = Item.find(@item4.id)
+      expect(item.status).to eq "Enabled"
+    end
+
+
   end
 end
 
