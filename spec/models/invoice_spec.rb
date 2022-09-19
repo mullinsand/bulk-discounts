@@ -106,11 +106,7 @@ RSpec.describe Invoice, type: :model do
         @invoice_items = create(:invoice_item, item: @item_2, invoice: @invoice, unit_price: @item_2.unit_price, quantity: 1)
       end
 
-      it 'can calculate total revenue of each item' do
-        expect(@invoice.revenue_order).to eq [@item, @item_2]
-      end
-
-      it 'can find the sum of each items total revenur for the invoice' do
+      it 'can find the sum of each items total revenue for the invoice' do
         expect(@invoice.total_revenue).to eq 200
       end
     end
