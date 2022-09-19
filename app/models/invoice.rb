@@ -9,6 +9,7 @@ class Invoice < ApplicationRecord
   has_many :invoice_items
   has_many :items, through: :invoice_items
 
+
   def find_invoice_item_quantity(invoice, item)
     InvoiceItem.find_by(invoice: invoice, item: item).quantity
   end
@@ -21,5 +22,11 @@ class Invoice < ApplicationRecord
     items.
     joins(:invoice_items).
     sum('invoice_items.quantity * invoice_items.unit_price')
+
+  def self.incomplete_invoices_sorted
+     joins(:invoice_items)
+    .distinct
+    .where.not("invoice_items.status = ?", 2)
+    .order(:created_at)
   end
 end

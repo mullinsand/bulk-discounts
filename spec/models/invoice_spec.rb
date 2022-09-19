@@ -37,6 +37,7 @@ RSpec.describe Invoice, type: :model do
     end
   end
 
+
   describe 'instance methods' do
     describe 'find_invoice_item_quantity(invoice, item)' do
       it 'can find an instance of invoice_item_quantity' do
@@ -108,6 +109,41 @@ RSpec.describe Invoice, type: :model do
 
       it 'can find the sum of each items total revenue for the invoice' do
         expect(@invoice.total_revenue).to eq 200
+      end
+    end
+  end
+
+
+  describe 'class methods' do
+    describe '#incomplete_invoices_sorted' do
+      it 'finds invoices that have invoice items that have not been shipped' do
+        invoices = create_list(:invoice, 5)
+        
+        inv_items_0_shipped = create_list(:invoice_item, 5, invoice: invoices[0], status: 2)
+       
+        inv_items_1_shipped = create_list(:invoice_item, 5, invoice: invoices[1], status: 2)
+        inv_items_1_pending= create_list(:invoice_item, 2, invoice: invoices[1], status: 0)
+        inv_items_1_packaged = create_list(:invoice_item, 2, invoice: invoices[1], status: 1)
+
+        inv_items_2_shipped = create_list(:invoice_item, 5, invoice: invoices[2], status: 2)
+
+        inv_items_3_pending = create_list(:invoice_item, 5, invoice: invoices[3], status: 0)
+
+        inv_items_4_packaged = create_list(:invoice_item, 5, invoice: invoices[4], status: 1)
+        
+        expect(Invoice.incomplete_invoices_sorted).to eq([invoices[1], invoices[3], invoices[4]])
+      end
+
+      it 'orders invoices with invoice items that have not been shipped by date' do
+        oldest_inv = create(:invoice, created_at: Date.yesterday)
+        middle_inv = create(:invoice, created_at: Date.today)
+        newest_inv = create(:invoice, created_at: Date.tomorrow)
+
+        oldest_inv_items = create_list(:invoice_item, 5, invoice: oldest_inv, status: 1)
+        middle_inv_items = create_list(:invoice_item, 5, invoice: middle_inv, status: 0)
+        newest_inv_items = create_list(:invoice_item, 5, invoice: newest_inv, status: 1)
+        
+        expect(Invoice.incomplete_invoices_sorted).to eq([oldest_inv, middle_inv, newest_inv])
       end
     end
   end
