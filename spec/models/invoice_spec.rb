@@ -64,6 +64,32 @@ RSpec.describe Invoice, type: :model do
       end
     end
 
+    describe 'find_invoice_item(invoice, item)' do
+      it 'can find an instance of invoice_item_quantity' do
+          @merchant = create(:merchant)
+          @merchant2 = create(:merchant)
+          
+          @items = create_list(:item, 10, merchant: @merchant)
+          @items2 = create_list(:item, 10, merchant: @merchant2)
+      
+          @customers = create_list(:customer, 2)
+          @customer = create(:customer)
+      
+          @invs_0 = create_list(:invoice, 3, customer: @customers[0]) #
+          @invs_1 = create_list(:invoice, 2, customer: @customers[1])
+          @invs_2 = create_list(:invoice, 2, customer: @customer)
+      
+          @inv_item_1 = create(:invoice_item, invoice: @invs_0[0], item: @items[0], quantity: 1) #this will always belong to @merchants[0]
+          @inv_item_2 = create(:invoice_item, invoice: @invs_0[1], item: @items[1], quantity: 1, status: 0) #this will always belong to @merchants[0]
+          @inv_item_3 = create(:invoice_item, invoice: @invs_0[2], item: @items[2], quantity: 1) #this will always belong to @merchants[0]      
+    
+          @inv_item_4 = create(:invoice_item, invoice: @invs_1[1], item: @items[1], quantity: 1) #this will always belong to @merchants[0]      
+          @inv_item_5 = create(:invoice_item, invoice: @invs_2[1], item: @items2[6], quantity: 1) #this will always belong to @merchants[0]      
+
+          expect(@invs_0[1].find_invoice_item_status(@invs_0[1], @items[1])).to eq "Pending"
+      end
+    end
+
     describe '.revenue' do
       
       before :each do

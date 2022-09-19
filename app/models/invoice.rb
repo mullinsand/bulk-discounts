@@ -13,6 +13,10 @@ class Invoice < ApplicationRecord
     InvoiceItem.find_by(invoice: invoice, item: item).quantity
   end
 
+  def find_invoice_item_status(invoice, item)
+    InvoiceItem.find_by(invoice: invoice, item: item).status
+  end
+
   def revenue_order
     items.
     joins(:invoice_items).
