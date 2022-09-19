@@ -29,6 +29,7 @@ p.groove {border-style: groove;}
   </ol>
 </div>
 
+<h3> Enabled Items </h3>
 <div class="enabled_items">
   <% @merchant.enabled_items.each do |item| %>
     <div id="item-<%=item.id%>">
@@ -39,8 +40,7 @@ p.groove {border-style: groove;}
 </div>
 <br>
 <br>
-<br>
-<br>
+<h3> Disabled Items </h3>
 <div class="disabled_items">
   <% @merchant.disabled_items.each do |item| %>
     <div id="item-<%=item.id%>">
