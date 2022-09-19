@@ -3,6 +3,11 @@ require 'rails_helper'
 RSpec.describe 'The Admin Invoice Show' do
   before :each do
     @invoices = create_list(:invoice, 20)
+
+    @inv_items_0 = create_list(:invoice_item, 5, invoice: @invoices[0])
+    @inv_items_1 = create_list(:invoice_item, 5, invoice: @invoices[1])
+    @inv_items_2 = create_list(:invoice_item, 5, invoice: @invoices[2])
+    
     visit admin_invoice_path(@invoices[0])
   end
   
@@ -46,10 +51,50 @@ RSpec.describe 'The Admin Invoice Show' do
   end
 
   describe 'invoice item information section' do
-    it 'shows all invoice item names on the invoice' do
-      
+    it 'shows all item names' do
+      within("#all_invoice_items") do
+        @inv_items_0.each do |ii|
+          within("#inv_item_#{ii.id}") do
+            expect(page).to have_content(ii.item.name)
+            expect(page).to_not have_content(@inv_items_1[0].item.name)
+          end
+        end
+      end
+    end
 
+    it 'shows all invoice item quantities' do
+      visit admin_invoice_path(@invoices[1])
+      within("#all_invoice_items") do
+        @inv_items_1.each do |ii|
+          within("#inv_item_#{ii.id}") do
+            expect(page).to have_content(ii.quantity)
+            expect(page).to_not have_content(@inv_items_0[2].quantity)
+          end
+        end
+      end
+    end
+
+    it 'shows all invoice item prices' do
+      visit admin_invoice_path(@invoices[2])
+      within("#all_invoice_items") do
+        @inv_items_2.each do |ii|
+          within("#inv_item_#{ii.id}") do
+            expect(page).to have_content(ii.unit_price)
+            expect(page).to_not have_content(@inv_items_0[3].unit_price)
+          end
+        end
+      end
+    end
+
+    it 'shows all invoice item statuses' do
+      visit admin_invoice_path(@invoices[2])
+      within("#all_invoice_items") do
+        @inv_items_2.each do |ii|
+          within("#inv_item_#{ii.id}") do
+            expect(page).to have_content(ii.status)
+          end
+        end
+      end
     end
   end
-
 end
