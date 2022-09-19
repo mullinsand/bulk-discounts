@@ -47,6 +47,15 @@ RSpec.describe 'The Admin Invoice Show' do
         end
       end
     end
+
+    it 'shows the total revenue in dollars' do
+      within("#invoice_info") do
+        @invoices.each do |inv|
+          visit admin_invoice_path(inv)
+          expect(page).to have_content(inv.total_invoice_revenue_dollars)
+        end
+      end
+    end
   end
 
   describe 'invoice item information section' do
@@ -96,9 +105,4 @@ RSpec.describe 'The Admin Invoice Show' do
       end
     end
   end
-
-  describe 'total revenue section' do
-
-  end
-
 end
