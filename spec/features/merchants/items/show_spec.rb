@@ -14,7 +14,7 @@ RSpec.describe 'Merchants Items Show' do
 
       visit merchant_items_path(merch1)
 
-      within '.items' do
+      within '.disabled_items' do
         within "#item-#{item1.id}" do
           expect(page).to have_link("#{item1.name}")
           click_link "#{item1.name}"

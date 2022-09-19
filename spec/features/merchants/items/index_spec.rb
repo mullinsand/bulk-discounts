@@ -244,8 +244,8 @@ RSpec.describe 'Merchants Items Index' do
       end
       item = Item.find(@item4.id)
       expect(item.status).to eq "Enabled"
+      save_and_open_page
     end
-
 
   end
 end
