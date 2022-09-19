@@ -14,8 +14,11 @@
     <div id="item-<%=item.id%>">
       Item Name: <%= item.name %> <br>
       Item Quantity: <%= @invoice.find_invoice_item(@invoice, item).first.quantity %> <br>
-      Item Price: $<%= ((item.unit_price.to_f) / 100).round(3) %> <br>
-      Invoice Status: <%= @invoice.find_invoice_item(@invoice, item).first.status %> <br>
+      Item Price: $<%= number_with_precision ((item.unit_price.to_f) / 100), precision: 2, delimiter: "," %> <br>
+      Invoice Status: <%= @invoice.find_invoice_item(@invoice, item).first.status %> 
+      <div id="status-update-<%=item.id%>">
+        <%= render partial: 'update_item_status', locals: { path: merchant_invoice_item_path(item.merchant, invoice_id: @invoice, item_id: item.id), method: :patch, button_text: 'Submit' } %>
+      </div>
       <br>
       <br>
   <% end %>

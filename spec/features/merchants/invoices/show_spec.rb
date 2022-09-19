@@ -102,7 +102,7 @@ RSpec.describe 'Invoice Show Page' do
 
       @invoice_items = create(:invoice_item, item: @item, invoice: @invoice, unit_price: @item.unit_price, status: 0) #pending
       @invoice_items = create(:invoice_item, item: @item_2, invoice: @invoice, unit_price: @item_2.unit_price, status: 1) #packaged
-      @invoice_items = create(:invoice_item, item: @item_3, invoice: @invoice, unit_price: @item_2.unit_price, status: 2) #shipped
+      @invoice_items = create(:invoice_item, item: @item_3, invoice: @invoice, unit_price: @item_3.unit_price, status: 2) #shipped
     end
 
     it 'can change the item status to Packaged' do
@@ -110,12 +110,14 @@ RSpec.describe 'Invoice Show Page' do
 
       within ".items" do
         within "#item-#{@item.id}" do
-          expect(page).to have_content("Pending")
-          select 'Packaged', from: "status"
-          click_button 'Submit'
-          expect(current_path).to eq merchant_invoice_path(@merchant, @invoice)
-          expect(page).to_not have_content("Pending")
-          expect(page).to have_content("Packaged")
+          expect(page).to have_content("Invoice Status: Pending")
+            within "#status-update-#{@item.id}" do
+              select 'Packaged', from: "status"
+              click_button 'Submit'
+              expect(current_path).to eq merchant_invoice_path(@merchant, @invoice)
+            end
+          expect(page).to_not have_content("Invoice Status: Pending")
+          expect(page).to have_content("Invoice Status: Packaged")
         end
       end
     end
@@ -125,12 +127,14 @@ RSpec.describe 'Invoice Show Page' do
 
       within ".items" do
         within "#item-#{@item_3.id}" do
-          expect(page).to have_content("Shipped")
-          select 'Pending', from: "status"
-          click_button 'Submit'
-          expect(current_path).to eq merchant_invoice_path(@merchant, @invoice)
-          expect(page).to_not have_content("Shipped")
-          expect(page).to have_content("Pending")
+          expect(page).to have_content("Invoice Status: Shipped")
+            within "#status-update-#{@item_3.id}" do
+              select 'Packaged', from: "status"
+              click_button 'Submit'
+              expect(current_path).to eq merchant_invoice_path(@merchant, @invoice)
+            end
+          expect(page).to_not have_content("Invoice Status: Pending")
+          expect(page).to have_content("Invoice Status: Packaged")
         end
       end
     end
@@ -140,12 +144,14 @@ RSpec.describe 'Invoice Show Page' do
 
       within ".items" do
         within "#item-#{@item_2.id}" do
-          expect(page).to have_content("Packaged")
-          select 'Shipped', from: "status"
-          click_button 'Submit'
-          expect(current_path).to eq merchant_invoice_path(@merchant, @invoice)
-          expect(page).to_not have_content("Packaged")
-          expect(page).to have_content("Shipped")
+          expect(page).to have_content("Invoice Status: Packaged")
+            within "#status-update-#{@item_2.id}" do
+              select 'Packaged', from: "status"
+              click_button 'Submit'
+              expect(current_path).to eq merchant_invoice_path(@merchant, @invoice)
+            end
+          expect(page).to_not have_content("Invoice Status: Pending")
+          expect(page).to have_content("Invoice Status: Packaged")
         end
       end
     end
