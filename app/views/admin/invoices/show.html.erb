@@ -5,3 +5,21 @@
 <p> Invoice Date: <%= @invoice.created_at.strftime("%A, %B %d, %Y") %> </p>
 <p> Customer: <%= @invoice.customer.first_name %> <%= @invoice.customer.last_name %> </p>
 </section>
+
+<br>
+<br>
+
+<section id="all_invoice_items">
+<% @invoice_items.each do |ii| %>
+<div id="inv_item_<%=ii.id %>">   
+  <h3> Item: <%= ii.item.name %> </h3>
+  <p> Quantity Ordered: <%= ii.quantity %> </p>
+  <p> Price Per Unit: <%= ii.unit_price %> </p>
+  <p> Item Status: <%= ii.status %> </p>
+</div>
+
+<% end %>
+
+
+</section>
+
