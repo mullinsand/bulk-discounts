@@ -104,6 +104,20 @@ RSpec.describe Merchant, type: :model do
         expect(merchant1.top_five_items).to eq [item6, item5, item1, item2, item3]
       end
     end
+
+    describe '#Top 5 merchants by revenue' do
+      it 'should sort successful transaction items by revenue in desc' do
+        merch1 = create(:merchant)
+        m1_items = create_list(:item, 10, merchant: merch1)
+        m1_items.each do |item|
+          invoice_number = [1,2,3].sample
+          
+        end
+
+        m1_inv_item = create_list(:invoice_item, 50, item: m1_items)
+        require 'pry'; binding.pry
+      end
+    end
   end
 
   it 'instantiates with Factorybot' do
