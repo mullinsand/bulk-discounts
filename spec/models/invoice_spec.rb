@@ -57,10 +57,10 @@ RSpec.describe Invoice, type: :model do
       end
 
       it 'orders invoices with invoice items that have not been shipped by date' do
-        oldest_inv = create(:invoice, created_at: Date.yesterday)
+        oldest_inv = create(:invoice, created_at: 2.day.ago)
         middle_inv = create(:invoice, created_at: Date.today)
         newest_inv = create(:invoice, created_at: Date.tomorrow)
-
+        
         oldest_inv_items = create_list(:invoice_item, 5, invoice: oldest_inv, status: 1)
         middle_inv_items = create_list(:invoice_item, 5, invoice: middle_inv, status: 0)
         newest_inv_items = create_list(:invoice_item, 5, invoice: newest_inv, status: 1)
