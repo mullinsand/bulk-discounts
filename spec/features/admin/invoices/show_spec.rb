@@ -8,6 +8,9 @@ RSpec.describe 'The Admin Invoice Show' do
     @inv_items_1 = create_list(:invoice_item, 5, invoice: @invoices[1])
     @inv_items_2 = create_list(:invoice_item, 5, invoice: @invoices[2])
     visit admin_invoice_path(@invoices[0])
+
+    @inv_extra = create(:invoice)
+    @inv_extra_inv_items = create_list(:invoice_item, 3, unit_price: 500, invoice: @inv_extra, quantity: 2)
   end
   
   describe 'invoice info section' do
@@ -49,11 +52,9 @@ RSpec.describe 'The Admin Invoice Show' do
     end
 
     it 'shows the total revenue in dollars' do
+      visit admin_invoice_path(@inv_extra)
       within("#invoice_info") do
-        @invoices.each do |inv|
-          visit admin_invoice_path(inv)
-          expect(page).to have_content(inv.total_invoice_revenue_dollars)
-        end
+        expect(page).to have_content("Total Revenue: $30.00")
       end
     end
   end
