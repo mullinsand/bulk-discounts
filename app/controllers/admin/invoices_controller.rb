@@ -11,16 +11,8 @@ class Admin::InvoicesController < ApplicationController
 
   def update
     @invoice= Invoice.find(params[:id])
-    if params[:status].present?
-      @invoice.update(invoice_params)
-      redirect_to admin_invoice_path(params[:id])
-    elsif @invoice.update(invoice_params)
-      redirect_to admin_invoice_path(params[:id])
-      flash[:notice] = 'Invoice edited successfully!'
-    else
-      redirect_to edit_admin_invoice_path(params[:id], params[:id])
-      flash[:alert] = "Error: #{@invoice.errors.full_messages.to_sentence}"
-    end
+    @invoice.update(invoice_params)
+    redirect_to admin_invoice_path(params[:id])
   end
 
 private
