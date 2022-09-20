@@ -109,10 +109,10 @@ RSpec.describe 'The Admin Invoice Show' do
 
       expect(page).to have_content("Status: Completed")
 
-      select("In Progress") #from: "status"
+      select("In Progress")
       click_button 'Submit'
 
-      expect(page).to have_content("Invoice Status: In Progress")
+      expect(page).to have_content("Status: In Progress")
       expect(page).to_not have_content("Status: Completed")
     end
 
@@ -124,7 +124,7 @@ RSpec.describe 'The Admin Invoice Show' do
       
       expect(page).to have_content("Status: In Progress")
       
-      select("Completed") #from: "status"
+      select("Completed")
       click_button 'Submit'
 
       expect(page).to have_content("Status: Completed")
@@ -139,7 +139,7 @@ RSpec.describe 'The Admin Invoice Show' do
 
       expect(page).to have_content("Status: Completed")
 
-      select("Cancelled") #from: "status"
+      select("Cancelled")
       click_button 'Submit'
 
       expect(page).to have_content("Status: Cancelled")
