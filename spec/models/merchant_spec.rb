@@ -106,14 +106,17 @@ RSpec.describe Merchant, type: :model do
     end
 
     describe '#Top 5 merchants by revenue' do
-      it 'should sort successful transaction items by revenue in desc' do
-        merchants = create_list(:merchant, 10)
+      before :each do
+        #this makes 500 records in the DB!!!
+        @merchants = create_list(:merchant, 10)
         revenue_fix = 0
-        merchants.each do |merchant|
+        transac_result = 0
+        @merchants.each do |merchant|
+          transac_result = 1 if revenue_fix == 9
           merch_items = create_list(:item, 10, merchant: merchant)
           merch_invoices = create_list(:invoice, 10)
           merch_invoices.each do |merch_invoice|
-            create(:transaction, result: 0, invoice: merch_invoice)
+            create(:transaction, result: transac_result, invoice: merch_invoice)
             create(:transaction, result: 1, invoice: merch_invoice)
           end
           n = 0
@@ -124,8 +127,69 @@ RSpec.describe Merchant, type: :model do
           revenue_fix += 1
         end
       end
+      it 'should sort successful transaction items by revenue in desc' do
+        top_five_merchants = [ @merchants[8], @merchants[7], @merchants[6], @merchants[5], @merchants[4] ]
+        expect(Merchant.top_five_merchants).to eq(top_five_merchants)
+      end
+
+      it 'should also return each merchants revenue generated' do
+        top_five_merchants_revenue  = [ 640, 490, 360, 250, 160]
+        revenue_array = Merchant.top_five_merchants.map(&:revenue)
+        expect(revenue_array).to eq(top_five_merchants_revenue)
+      end
+
+      it 'should also return each merchants id' do
+        top_five_merchants_id = [ @merchants[8].id, @merchants[7].id, @merchants[6].id, @merchants[5].id, @merchants[4].id ]
+        id_array = Merchant.top_five_merchants.map(&:id)
+        expect(id_array).to eq(top_five_merchants_id)
+      end
+    end
+
+    describe '#best_selling_day' do
+      before :each do
+        @merchant = create(:merchant)
+        merch_items = create_list(:item, 15, merchant: @merchant)
+        days = 0
+        @merch_invoices = []
+        10.times do
+          @merch_invoices << create(:invoice, created_at: days.day.ago)
+          days += 1
+        end
+        days = 5
+        5.times do
+          @merch_invoices << create(:invoice, created_at: days.day.ago)
+          days += 1
+        end
+        transac_result = 0
+        @merch_invoices.each do |merch_invoice|
+          transac_result = 1 if (merch_invoice == @merch_invoices[9]) || (merch_invoice == @merch_invoices[14])
+          # merch_invoice == (merch_invoice[9] || merch_invoice[14]) ? (transac_result = 1) : (transac_result = 0)
+          #all transactions for the highest revenue day (9.day.ago where n=9) are failed
+          create(:transaction, result: transac_result, invoice: merch_invoice)
+          create(:transaction, result: 1, invoice: merch_invoice)
+          transac_result = 0
+        end
+        n = 0
+        merch_items.each do |merch_item|
+          create(:invoice_item, item: merch_item, invoice: @merch_invoices[n], unit_price: n, quantity: n)
+          n += 1
+        end
+      end
+      it 'should return highest revenue date with successful transaction items' do
+        highest_revenue_day = @merch_invoices[8].created_at.to_date
+        expect(@merchant.best_selling_day.sale_date).to eq(highest_revenue_day)
+      end
+
+      it 'should also return that days revenue generated' do
+        highest_revenue_day_revenue = 
+        @merch_invoices[8].total_revenue + @merch_invoices[13].total_revenue
+
+        expect(@merchant.best_selling_day.revenue).to eq(highest_revenue_day_revenue)
+      end
     end
   end
+
+  
 
   it 'instantiates with Factorybot' do
     merchant = create(:merchant)
