@@ -9,6 +9,7 @@ RSpec.describe 'The Admin Invoice Show' do
     @inv_items_2 = create_list(:invoice_item, 5, invoice: @invoices[2])
     
     visit admin_invoice_path(@invoices[0])
+    
   end
   
   describe 'invoice info section' do
@@ -98,7 +99,7 @@ RSpec.describe 'The Admin Invoice Show' do
     end
   end
 
-  describe 'update invoice status'
+  describe 'update invoice status' do
 
     it 'changes a status to In Progress' do
       comp_invoice = create(:invoice, status: 1)
@@ -106,13 +107,13 @@ RSpec.describe 'The Admin Invoice Show' do
 
       visit admin_invoice_path(comp_invoice.id)
 
-      expect(page).to have_content("Invoice Status: Completed")
+      expect(page).to have_content("Status: Completed")
 
-      select("In Progress"), from: "status"
+      select("In Progress") #from: "status"
       click_button 'Submit'
 
       expect(page).to have_content("Invoice Status: In Progress")
-      expect(page).to_not have_content("Invoice Status: Completed")
+      expect(page).to_not have_content("Status: Completed")
     end
 
     it 'changes a status to Completed' do
@@ -120,14 +121,14 @@ RSpec.describe 'The Admin Invoice Show' do
       canc_invoice = create(:invoice, status: 2)
 
       visit admin_invoice_path(ip_invoice.id)
-
-      expect(page).to have_content("Invoice Status: In Progress")
       
-      select("Completed"), from: "status"
+      expect(page).to have_content("Status: In Progress")
+      
+      select("Completed") #from: "status"
       click_button 'Submit'
 
-      expect(page).to have_content("Invoice Status: Completed")
-      expect(page).to_not have_content("Invoice Status: In Progress")
+      expect(page).to have_content("Status: Completed")
+      expect(page).to_not have_content("Status: In Progress")
     end
 
     it 'changes a status to Cancelled' do
@@ -136,13 +137,14 @@ RSpec.describe 'The Admin Invoice Show' do
 
       visit admin_invoice_path(comp_invoice.id)
 
-      expect(page).to have_content("Invoice Status: Completed")
+      expect(page).to have_content("Status: Completed")
 
-      select("Cancelled"), from: "status"
+      select("Cancelled") #from: "status"
       click_button 'Submit'
 
-      expect(page).to have_content("Invoice Status: Cancelled")
-      expect(page).to_not have_content("Invoice Status: Completed")
+      expect(page).to have_content("Status: Cancelled")
+      expect(page).to_not have_content("Status: Completed")
     end
+  end
 
 end

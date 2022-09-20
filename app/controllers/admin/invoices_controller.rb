@@ -9,4 +9,8 @@ class Admin::InvoicesController < ApplicationController
     @invoice_items = @invoice.invoice_items
   end
 
+  def update
+    # binding.pry
+  end
+
 end
