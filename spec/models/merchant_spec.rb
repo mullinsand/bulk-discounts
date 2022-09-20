@@ -107,15 +107,22 @@ RSpec.describe Merchant, type: :model do
 
     describe '#Top 5 merchants by revenue' do
       it 'should sort successful transaction items by revenue in desc' do
-        merch1 = create(:merchant)
-        m1_items = create_list(:item, 10, merchant: merch1)
-        m1_items.each do |item|
-          invoice_number = [1,2,3].sample
-          
+        merchants = create_list(:merchant, 10)
+        revenue_fix = 0
+        merchants.each do |merchant|
+          merch_items = create_list(:item, 10, merchant: merchant)
+          merch_invoices = create_list(:invoice, 10)
+          merch_invoices.each do |merch_invoice|
+            create(:transaction, result: 0, invoice: merch_invoice)
+            create(:transaction, result: 1, invoice: merch_invoice)
+          end
+          n = 0
+          merch_items.each do |merch_item|
+            create(:invoice_item, item: merch_item, invoice: merch_invoices[n], unit_price: revenue_fix, quantity: revenue_fix)
+            n += 1
+          end
+          revenue_fix += 1
         end
-
-        m1_inv_item = create_list(:invoice_item, 50, item: m1_items)
-        require 'pry'; binding.pry
       end
     end
   end
