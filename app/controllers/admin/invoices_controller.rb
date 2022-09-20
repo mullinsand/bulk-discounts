@@ -9,4 +9,31 @@ class Admin::InvoicesController < ApplicationController
     @invoice_items = @invoice.invoice_items
   end
 
+  def update
+    @invoice= Invoice.find(params[:id])
+    if params[:status].present?
+      @invoice.update(invoice_params)
+      redirect_to admin_invoice_path(params[:id])
+    elsif @invoice.update(invoice_params)
+      redirect_to admin_invoice_path(params[:id])
+      flash[:notice] = 'Invoice edited successfully!'
+    else
+      redirect_to edit_admin_invoice_path(params[:id], params[:id])
+      flash[:alert] = "Error: #{@invoice.errors.full_messages.to_sentence}"
+    end
+  end
+
+private
+  
+  def invoice_params
+    if params[:status] == "0"
+      params[:status] = 0
+    elsif params[:status] == "1"
+      params[:status] = 1.
+    elsif params[:status] == "2"
+      params[:status] = 2
+    end
+    params.permit(:status)
+  end
+
 end
