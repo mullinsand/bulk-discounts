@@ -163,7 +163,6 @@ RSpec.describe Merchant, type: :model do
         transac_result = 0
         @merch_invoices.each do |merch_invoice|
           transac_result = 1 if (merch_invoice == @merch_invoices[9]) || (merch_invoice == @merch_invoices[14])
-          # merch_invoice == (merch_invoice[9] || merch_invoice[14]) ? (transac_result = 1) : (transac_result = 0)
           #all transactions for the highest revenue day (9.day.ago where n=9) are failed
           create(:transaction, result: transac_result, invoice: merch_invoice)
           create(:transaction, result: 1, invoice: merch_invoice)
@@ -171,6 +170,7 @@ RSpec.describe Merchant, type: :model do
         end
         n = 0
         merch_items.each do |merch_item|
+          #creates invoice_items with increasing revenue values as the date gets older
           create(:invoice_item, item: merch_item, invoice: @merch_invoices[n], unit_price: n, quantity: n)
           n += 1
         end
