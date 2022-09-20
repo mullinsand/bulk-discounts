@@ -46,9 +46,9 @@ RSpec.describe 'Merchant Item New' do
 
       click_link("Create New Item")
 
-      fill_in :name, with: "Christmas Album"
-      fill_in :description, with: "YEEEEEEEEEEHAWWWWWWWWWWWW"
-      fill_in :unit_price, with: 2000
+      fill_in :item_name, with: "Christmas Album"
+      fill_in :item_description, with: "YEEEEEEEEEEHAWWWWWWWWWWWW"
+      fill_in :item_unit_price, with: 2000
       click_button 'Create Item'
       new_item = Item.last
       within '.disabled_items' do
@@ -59,19 +59,19 @@ RSpec.describe 'Merchant Item New' do
       within '.enabled_items' do
         expect(page).to_not have_css("#item-#{new_item.id}")
       end
+    end
 
-      it 'returns to new page with error message if name (or other fields) not filled out' do
-        visit merchant_items_path(@merch_1)
+    it 'returns to new page with error message if name (or other fields) not filled out' do
+      visit merchant_items_path(@merch_1)
 
-        click_link("Create New Item")
-  
-        fill_in :name, with: ""
-        fill_in :description, with: "YEEEEEEEEEEHAWWWWWWWWWWWW"
-        fill_in :unit_price, with: 2000
-        click_button 'Create Item'
-        expect(current_path).to eq(new_merchant_item_path(@merch_1))
-        expect(page).to have_content("Error: Name can't be blank")
-      end
+      click_link("Create New Item")
+
+      fill_in :name, with: ""
+      fill_in :description, with: "YEEEEEEEEEEHAWWWWWWWWWWWW"
+      fill_in :unit_price, with: 2000
+      click_button 'Create Item'
+      expect(current_path).to eq(new_merchant_item_path(@merch_1))
+      expect(page).to have_content("Error: Name can't be blank")
     end
   end
 end
