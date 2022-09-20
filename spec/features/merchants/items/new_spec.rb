@@ -33,15 +33,15 @@ RSpec.describe 'Merchant Item New' do
       expect(current_path).to eq(merchant_items_path(@merch_1))
       new_item = Item.last
       
-      within ".items" do
-        within "#item-#{new_item.id}" do
-          expect(page).to have_content("Christmas Album")
-        end
+
+      within "#item-#{new_item.id}" do
+        expect(page).to have_content("Christmas Album")
       end
+
 
     end
 
-    xit 'new items are by default disabled' do
+    it 'new items are by default disabled' do
       visit merchant_items_path(@merch_1)
 
       click_link("Create New Item")
@@ -51,13 +51,13 @@ RSpec.describe 'Merchant Item New' do
       fill_in :unit_price, with: 2000
       click_button 'Create Item'
       new_item = Item.last
-      within '#disabled_items' do
-        within "#item_#{new_item.id}" do
+      within '.disabled_items' do
+        within "#item-#{new_item.id}" do
           expect(page).to have_content(new_item.name)
         end
       end
-      within '#enabled_items' do
-        expect(page).to_not have_css("#item_#{new_item.id}")
+      within '.enabled_items' do
+        expect(page).to_not have_css("#item-#{new_item.id}")
       end
 
       it 'returns to new page with error message if name (or other fields) not filled out' do
