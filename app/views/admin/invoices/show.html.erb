@@ -2,8 +2,9 @@
 <h1> Invoice #<%=@invoice.id%> </h1>
 
 <p> Status: <%= @invoice.status %> </p>
-<p> Invoice Date: <%= @invoice.created_at.strftime("%A, %B %d, %Y") %> </p>
-<p> Customer: <%= @invoice.customer.first_name %> <%= @invoice.customer.last_name %> </p>
+<p> Created on: <%= @invoice.created_at.strftime("%A, %B %d, %Y") %> </p>
+<p> Total Revenue: $<%= number_with_precision(@invoice.total_invoice_revenue_dollars, precision: 2, delimiter: ",") %>
+<p> <h3> Customer: </h3> <%= @invoice.customer.first_name %> <%= @invoice.customer.last_name %> </p>
 </section>
 
 <br>
@@ -14,7 +15,7 @@
 <div id="inv_item_<%=ii.id %>">   
   <h3> Item: <%= ii.item.name %> </h3>
   <p> Quantity Ordered: <%= ii.quantity %> </p>
-  <p> Price Per Unit: <%= ii.unit_price %> </p>
+  <p> Unit Price $<%= number_with_precision(ii.item.current_price, precision: 2, delimiter: ",") %> </p>
   <p> Item Status: <%= ii.status %> </p>
 </div>
 

@@ -7,8 +7,10 @@ RSpec.describe 'The Admin Invoice Show' do
     @inv_items_0 = create_list(:invoice_item, 5, invoice: @invoices[0])
     @inv_items_1 = create_list(:invoice_item, 5, invoice: @invoices[1])
     @inv_items_2 = create_list(:invoice_item, 5, invoice: @invoices[2])
-    
     visit admin_invoice_path(@invoices[0])
+
+    @inv_extra = create(:invoice)
+    @inv_extra_inv_items = create_list(:invoice_item, 3, unit_price: 500, invoice: @inv_extra, quantity: 2)
   end
   
   describe 'invoice info section' do
@@ -48,6 +50,13 @@ RSpec.describe 'The Admin Invoice Show' do
         end
       end
     end
+
+    it 'shows the total revenue in dollars' do
+      visit admin_invoice_path(@inv_extra)
+      within("#invoice_info") do
+        expect(page).to have_content("Total Revenue: $30.00")
+      end
+    end
   end
 
   describe 'invoice item information section' do
@@ -68,7 +77,6 @@ RSpec.describe 'The Admin Invoice Show' do
         @inv_items_1.each do |ii|
           within("#inv_item_#{ii.id}") do
             expect(page).to have_content(ii.quantity)
-            expect(page).to_not have_content(@inv_items_0[2].quantity)
           end
         end
       end
@@ -79,7 +87,7 @@ RSpec.describe 'The Admin Invoice Show' do
       within("#all_invoice_items") do
         @inv_items_2.each do |ii|
           within("#inv_item_#{ii.id}") do
-            expect(page).to have_content(ii.unit_price)
+            expect(page).to have_content(ii.item.current_price)
             expect(page).to_not have_content(@inv_items_0[3].unit_price)
           end
         end
