@@ -16,10 +16,10 @@ class Admin::InvoicesController < ApplicationController
       redirect_to admin_invoice_path(params[:id])
     elsif @invoice.update(invoice_params)
       redirect_to admin_invoice_path(params[:id])
-      flash[:notice] = 'Item edited successfully!'
+      flash[:notice] = 'Invoice edited successfully!'
     else
       redirect_to edit_admin_invoice_path(params[:id], params[:id])
-      flash[:alert] = "Error: #{@item.errors.full_messages.to_sentence}"
+      flash[:alert] = "Error: #{@invoice.errors.full_messages.to_sentence}"
     end
   end
 
