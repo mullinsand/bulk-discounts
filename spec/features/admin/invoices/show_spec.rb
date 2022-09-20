@@ -97,4 +97,52 @@ RSpec.describe 'The Admin Invoice Show' do
       end
     end
   end
+
+  describe 'update invoice status'
+
+    it 'changes a status to In Progress' do
+      comp_invoice = create(:invoice, status: 1)
+      canc_invoice = create(:invoice, status: 2)
+
+      visit admin_invoice_path(comp_invoice.id)
+
+      expect(page).to have_content("Invoice Status: Completed")
+
+      select("In Progress"), from: "status"
+      click_button 'Submit'
+
+      expect(page).to have_content("Invoice Status: In Progress")
+      expect(page).to_not have_content("Invoice Status: Completed")
+    end
+
+    it 'changes a status to Completed' do
+      ip_invoice = create(:invoice, status: 0)
+      canc_invoice = create(:invoice, status: 2)
+
+      visit admin_invoice_path(ip_invoice.id)
+
+      expect(page).to have_content("Invoice Status: In Progress")
+      
+      select("Completed"), from: "status"
+      click_button 'Submit'
+
+      expect(page).to have_content("Invoice Status: Completed")
+      expect(page).to_not have_content("Invoice Status: In Progress")
+    end
+
+    it 'changes a status to Cancelled' do
+      ip_invoice = create(:invoice, status: 0)
+      comp_invoice = create(:invoice, status: 1)
+
+      visit admin_invoice_path(comp_invoice.id)
+
+      expect(page).to have_content("Invoice Status: Completed")
+
+      select("Cancelled"), from: "status"
+      click_button 'Submit'
+
+      expect(page).to have_content("Invoice Status: Cancelled")
+      expect(page).to_not have_content("Invoice Status: Completed")
+    end
+
 end
