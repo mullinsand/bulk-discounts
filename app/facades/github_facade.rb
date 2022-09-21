@@ -14,7 +14,7 @@ class GithubFacade
   end
 
   def self.get_teammate_data
-    parsed = GithubService.get_data("contributors")
+    parsed = GithubService.get_data("/contributors")
     teammates = parsed.map do |teammate_data|
       Teammate.new(teammate_data)
     end
@@ -22,7 +22,7 @@ class GithubFacade
   end
 
   def self.get_pull_request_data
-    parsed = GithubService.get_data("pulls?state=all")
+    parsed = GithubService.get_data("/pulls?state=all")
     parsed.size
   end
 end
