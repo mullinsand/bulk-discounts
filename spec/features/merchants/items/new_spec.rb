@@ -66,9 +66,9 @@ RSpec.describe 'Merchant Item New' do
 
       click_link("Create New Item")
 
-      fill_in :name, with: ""
-      fill_in :description, with: "YEEEEEEEEEEHAWWWWWWWWWWWW"
-      fill_in :unit_price, with: 2000
+      fill_in :item_name, with: ""
+      fill_in :item_description, with: "YEEEEEEEEEEHAWWWWWWWWWWWW"
+      fill_in :item_unit_price, with: 2000
       click_button 'Create Item'
       expect(current_path).to eq(new_merchant_item_path(@merch_1))
       expect(page).to have_content("Error: Name can't be blank")
