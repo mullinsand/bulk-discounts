@@ -14,3 +14,5 @@ class MerchantsController < ApplicationController
   #   params.permit(:name)
   # end
 end
+
+

@@ -38,6 +38,7 @@ gem 'bootsnap', '>= 1.1.0', require: false
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
+  gem "webmock"
   gem 'pry'
   gem 'rspec-rails', '~> 4.0.1'
   gem 'simplecov'
@@ -47,7 +48,8 @@ group :development, :test do
   gem 'launchy'
   gem 'faker'
   gem 'factory_bot_rails'
-
+  gem 'httparty'
+  gem 'vcr'
 end
 
 group :development do
@@ -64,3 +66,6 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem "ruby-lsp", "~> 0.3.2", :group => :development
+
+gem 'figaro'
+gem 'httparty'
