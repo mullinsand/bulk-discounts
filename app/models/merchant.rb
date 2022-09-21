@@ -35,5 +35,9 @@ class Merchant < ApplicationRecord
   def disabled_items
     items.where(status: 1)
   end
+
+  def self.alpha
+    order(:name)
+  end
 end
 
