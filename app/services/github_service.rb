@@ -46,4 +46,3 @@ class GithubService
   end
 end
 
-GithubService.get_github_data
