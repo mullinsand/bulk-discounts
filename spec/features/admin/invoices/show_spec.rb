@@ -139,7 +139,6 @@ RSpec.describe 'The Admin Invoice Show' do
 
         expect(current_path).to eq(admin_invoice_path(ip_invoice.id))
         expect(page).to have_content("Status: Completed")
-        expect(page).to_not have_content("Status: In Progress")
       end
     end
 
