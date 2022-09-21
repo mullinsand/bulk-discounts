@@ -28,6 +28,7 @@ class Merchant < ApplicationRecord
     items_sorted_by_revenue.successful_transactions.limit(5)
   end
 
+
   def self.top_five_merchants
     Merchant.joins(items:[invoices: :transactions])
     .select("merchants.*, sum(invoice_items.quantity *invoice_items.unit_price) as revenue")
@@ -46,6 +47,14 @@ class Merchant < ApplicationRecord
     .limit(1)
     .order(sale_date: :desc)
     .first
+   end
+
+  def enabled_items
+    items.where(status: 0)
+  end
+
+  def disabled_items
+    items.where(status: 1)
   end
 end
 

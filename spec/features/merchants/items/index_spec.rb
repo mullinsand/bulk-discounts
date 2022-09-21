@@ -14,7 +14,7 @@ RSpec.describe 'Merchants Items Index' do
 
       visit merchant_items_path(merch1)
       
-      within '.items' do
+      within '.disabled_items' do
         expect(page).to have_content("#{item1.name}")
         expect(page).to have_content("#{item2.name}")
         expect(page).to_not have_content("#{item3.name}")
@@ -192,4 +192,72 @@ RSpec.describe 'Merchants Items Index' do
     end
 
   end
+
+  describe 'Merchant Item Enable/Disable' do
+
+    before :each do
+      @merchant = create(:merchant)
+      @customers = create_list(:customer, 3)
+
+      @cus1_invoice = @customers[0].invoices.create(attributes_for(:invoice))
+      @cus2_invoice = @customers[1].invoices.create(attributes_for(:invoice))
+      @cus3_invoice = @customers[2].invoices.create(attributes_for(:invoice))
+     
+      @inv1_trans = @cus1_invoice.transactions.create(attributes_for(:transaction, result: 0))
+      @inv2_trans = @cus2_invoice.transactions.create(attributes_for(:transaction, result: 0))
+      @inv3_trans = @cus3_invoice.transactions.create(attributes_for(:transaction, result: 0))
+
+      @item1 = @merchant.items.create(attributes_for(:item, status: 0))
+      @item2 = @merchant.items.create(attributes_for(:item, status: 0))
+      @item3 = @merchant.items.create(attributes_for(:item, status: 0))
+      @item4 = @merchant.items.create(attributes_for(:item))
+      @item5 = @merchant.items.create(attributes_for(:item))
+
+      @inv_item1 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item1.id, quantity: 1, unit_price: @item1.unit_price)
+      @inv_item2 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item2.id, quantity: 1, unit_price: @item2.unit_price)
+      @inv_item3 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item3.id, quantity: 1, unit_price: @item3.unit_price)
+      @inv_item4 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item4.id, quantity: 1, unit_price: @item4.unit_price)
+      @inv_item5 = create(:invoice_item, invoice_id: @cus1_invoice.id, item_id: @item5.id, quantity: 1, unit_price: @item5.unit_price)
+    end
+
+    it 'can enable an item' do
+      visit merchant_items_path(@merchant)
+      
+      within ".enabled_items" do
+        within "#item-#{@item1.id}" do
+          expect(page).to have_button("Disable")
+          click_button "Disable"
+        end
+      end
+      item = Item.find(@item1.id)
+
+      expect(current_path).to eq(merchant_items_path(@merchant))
+      expect(item.status).to eq "Disabled"
+    end
+
+    it 'can disable an item' do
+      visit merchant_items_path(@merchant)
+      
+      within ".disabled_items" do
+        within "#item-#{@item4.id}" do
+          expect(page).to have_button("Enable")
+          click_button "Enable"
+        end
+      end
+      item = Item.find(@item4.id)
+      
+      expect(current_path).to eq(merchant_items_path(@merchant))
+      expect(item.status).to eq "Enabled"
+    end
+
+
+  end
 end
+
+# <div class="items">
+#   <% @merchant.items.each do |item| %>
+#     <div id="item-<%=item.id%>">
+#       <%= link_to item.name, merchant_item_path(@merchant, item) %> <br>
+#     </div>
+#   <% end %>
+# </div>
