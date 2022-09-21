@@ -149,6 +149,7 @@ RSpec.describe 'The Admin Invoice Show' do
         comp_invoice = create(:invoice, status: 1)
 
         visit admin_invoice_path(comp_invoice.id)
+        
 
         expect(page).to have_content("Status: Completed")
 
@@ -158,6 +159,20 @@ RSpec.describe 'The Admin Invoice Show' do
         expect(current_path).to eq(admin_invoice_path(comp_invoice.id))
         expect(page).to have_content("Status: Cancelled")
         expect(page).to_not have_content("Status: Completed")
+      end
+    end
+
+    it 'button defaults to the invoice status' do
+      within("#invoice_info") do
+        ip_invoice = create(:invoice, status: 0)
+        visit admin_invoice_path(ip_invoice.id)
+
+        expect(page).to have_content("Status: In Progress")
+        
+        click_button 'Submit'
+
+        expect(current_path).to eq(admin_invoice_path(ip_invoice.id))
+        expect(page).to have_content("Status: In Progress")
       end
     end
   end
