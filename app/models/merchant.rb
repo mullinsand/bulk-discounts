@@ -28,6 +28,27 @@ class Merchant < ApplicationRecord
     items_sorted_by_revenue.successful_transactions.limit(5)
   end
 
+
+  def self.top_five_merchants
+    Merchant.joins(items:[invoices: :transactions])
+    .select("merchants.*, sum(invoice_items.quantity *invoice_items.unit_price) as revenue")
+    .where("transactions.result = 0")
+    .group(:id)
+    .order(revenue: :desc)
+    .limit(5)
+  end
+
+  def best_selling_day
+    items.joins(invoices: :transactions)
+    .select("invoices.created_at::DATE as sale_date", "sum(invoice_items.quantity *invoice_items.unit_price) as revenue")
+    .where("transactions.result = 0")
+    .group(:sale_date)
+    .order(revenue: :desc)
+    .limit(1)
+    .order(sale_date: :desc)
+    .first
+   end
+
   def enabled_items
     items.where(status: 0)
   end

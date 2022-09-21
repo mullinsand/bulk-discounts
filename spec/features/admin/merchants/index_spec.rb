@@ -202,4 +202,81 @@ RSpec.describe 'Admin Merchants Index' do
       end
     end
   end
+
+  describe 'Top 5 Merchants by Revenue' do
+    before :each do
+      #this makes 500 records in the DB!!!
+      @merchants = create_list(:merchant, 10)
+      revenue_fix = 0
+      transac_result = 0
+      @merchants.each do |merchant|
+        transac_result = 1 if revenue_fix == 9
+        merch_items = create_list(:item, 10, merchant: merchant)
+        merch_invoices = create_list(:invoice, 10)
+        merch_invoices.each do |merch_invoice|
+          create(:transaction, result: transac_result, invoice: merch_invoice)
+          create(:transaction, result: 1, invoice: merch_invoice)
+        end
+        n = 0
+        merch_items.each do |merch_item|
+          create(:invoice_item, item: merch_item, invoice: merch_invoices[n], unit_price: revenue_fix, quantity: revenue_fix)
+          n += 1
+        end
+        revenue_fix += 1
+      end
+      visit '/admin/merchants'
+    end
+
+    it 'see the names of the top 5 merchants by total revenue generated' do
+      top_five_merchants = [ @merchants[8], @merchants[7], @merchants[6], @merchants[5], @merchants[4] ]
+      within("#top_five_merchants") do
+        top_five_merchants.each do |merchant|
+          within "#top_merchant_#{merchant.id}" do
+            expect(page).to have_content(merchant.name)
+          end
+        end
+        expect(page).to_not have_content(@merchants.first.name)
+      end
+    end
+
+    it 'next to each merchant name is their total revenue' do
+      best_merchants = Merchant.top_five_merchants
+      revenue_array = best_merchants.map(&:revenue)
+      within("#top_five_merchants") do
+        best_merchants.each do |merchant|
+          within "#top_merchant_#{merchant.id}" do
+            rev_in_dollars = "$#{((revenue_array[best_merchants.find_index(merchant)].to_f)/100).round(2)}"
+            expect(page).to have_content(rev_in_dollars)
+          end
+        end
+      end
+    end
+
+    it 'each merchant name is a link to admin merchant show page' do
+      top_five_merchants = [ @merchants[8], @merchants[7], @merchants[6], @merchants[5], @merchants[4] ]
+      within("#top_five_merchants") do
+        top_five_merchants.each do |merchant|
+          within "#top_merchant_#{merchant.id}" do
+            click_link(merchant.name)
+            expect(current_path).to eq(admin_merchant_path(merchant))
+            visit '/admin/merchants'
+          end
+        end
+      end
+    end
+
+    it 'has a label for each merchant name listing their best day and revenue from that day' do
+      top_five_merchants = [ @merchants[8], @merchants[7], @merchants[6], @merchants[5], @merchants[4] ]
+      within("#top_five_merchants") do
+        top_five_merchants.each do |merchant|
+          within "#top_merchant_#{merchant.id}" do
+            within "#best_day_merchant_#{merchant.id}" do
+              best_date = merchant.best_selling_day.sale_date.to_date
+              expect(page).to have_content("Top selling date for #{merchant.name} was #{best_date}")
+            end
+          end
+        end
+      end
+    end
+  end
 end
