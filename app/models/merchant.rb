@@ -43,7 +43,9 @@ class Merchant < ApplicationRecord
     .where("transactions.result = 0")
     .group(:sale_date)
     .order(revenue: :desc)
-    .limit(1).first
+    .limit(1)
+    .order(sale_date: :desc)
+    .first
   end
 end
 

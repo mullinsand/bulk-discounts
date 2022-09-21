@@ -183,10 +183,20 @@ RSpec.describe Merchant, type: :model do
       it 'should also return that days revenue generated' do
         highest_revenue_day_revenue = 
         @merch_invoices[8].total_revenue + @merch_invoices[13].total_revenue
-
+      
         expect(@merchant.best_selling_day.revenue).to eq(highest_revenue_day_revenue)
       end
+
+      it 'returns the most recent invoice if there is a tie' do
+        tied_invoice = create(:invoice, created_at: 100.day.ago)
+        tied_item = create(:item, merchant: @merchant)
+        inv_item_tie = create(:invoice_item, unit_price: 233, quantity: 1, invoice: tied_invoice, item: tied_item)
+        
+        expect(@merchant.best_selling_day.sale_date).to eq(@merch_invoices[8].created_at.to_date)
+      end
     end
+
+  
   end
 
   
