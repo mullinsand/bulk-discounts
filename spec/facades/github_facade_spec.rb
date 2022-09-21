@@ -27,9 +27,6 @@ RSpec.describe GithubFacade do
       VCR.use_cassette "teammate_data" do
         expect(GithubFacade.get_teammate_data.count).to eq(4)
       end
-      VCR.use_cassette "teammate_data" do
-        expect(GithubFacade.get_teammate_data.count).to eq(4)
-      end
     end
 
     it 'gets teammate usernames' do
@@ -49,9 +46,6 @@ RSpec.describe GithubFacade do
     it 'returns the name of the repo' do
       VCR.use_cassette "pull_request_data" do
         expect(GithubFacade.get_pull_request_data).to be_instance_of(Integer)
-      end
-      VCR.use_cassette "pull_request_data" do
-        expect(GithubFacade.get_pull_request_data).to eq(28)
       end
     end
   end

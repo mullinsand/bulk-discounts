@@ -2,7 +2,7 @@ class ApplicationController < ActionController::Base
   before_action :get_github_footer
 
   def get_github_footer
-    @github_info = GithubFacade.get_github_info
+    @github_info = GithubFacade.get_github_data
   end
 
   private

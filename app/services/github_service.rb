@@ -1,6 +1,4 @@
 require 'teammate'
-require 'repo_name'
-require 'pull_request'
 
 class GithubService
   def self.get_data(uri_add_on)

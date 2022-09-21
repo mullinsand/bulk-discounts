@@ -23,8 +23,6 @@ class GithubFacade
 
   def self.get_pull_request_data
     parsed = GithubService.get_data("pulls?state=all")
-    parsed.map do |pr_data|
-      PullRequest.new(pr_data)
-    end.size
+    parsed.size
   end
 end
