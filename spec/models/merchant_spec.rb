@@ -41,6 +41,15 @@ RSpec.describe Merchant, type: :model do
         expect(Merchant.disabled_merchants).to eq(disabled_merchants)
       end
     end
+
+    describe '.alpha' do
+      it 'orders merchants in alpha order' do
+        merch1 = Merchant.create!(name: "Tillies Store")
+        merch2 = Merchant.create!(name: "Abby's Store")
+
+        expect(Merchant.alpha).to eq [merch2, merch1]
+      end
+    end
   end
 
   describe 'instance methods' do

@@ -5,6 +5,10 @@ class MerchantsController < ApplicationController
     @items_to_ship = Item.find_items_to_ship(params[:id])
   end
 
+  def index
+    @merchants = Merchant.all
+  end
+
   # private
   # def merchant_params
   #   params.permit(:name)

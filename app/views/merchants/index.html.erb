@@ -1,0 +1,5 @@
+<h1> All Merchants </h1>
+<br>
+<% @merchants.alpha.each do |merchant| %>
+  <%= link_to merchant.name, "/merchants/#{merchant.id}/dashboard" %> <br>
+<% end %>
