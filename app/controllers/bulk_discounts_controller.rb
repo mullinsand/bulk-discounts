@@ -12,13 +12,13 @@ class BulkDiscountsController < ApplicationController
   end
 
   def create
-    require 'pry'; binding.pry
-    item = merchant.items.new(model_item_params)
-    if item.save
-      redirect_to merchant_items_path(params[:merchant_id])
+    merchant = Merchant.find(params[:merchant_id])
+    bulk_discount = merchant.bulk_discounts.new(bulk_discount_params)
+    if bulk_discount.save
+      redirect_to merchant_bulk_discounts_path(params[:merchant_id])
     else
-      redirect_to new_merchant_item_path(params[:merchant_id])
-      flash[:alert] = "Error: #{error_message(item.errors)}"
+      redirect_to new_merchant_bulk_discount_path(params[:merchant_id])
+      flash[:alert] = "Error: #{error_message(bulk_discount.errors)}"
     end
   end
 
@@ -43,17 +43,8 @@ class BulkDiscountsController < ApplicationController
 
   # end
 
-  # private
-  # def model_item_params
-  #   params.require(:item).permit(:name, :description, :unit_price)
-  # end
-
-  # def item_params
-  #     if params[:status] == "0"
-  #       params[:status] = 0
-  #     elsif params[:status] == "1"
-  #       params[:status] = 1
-  #     end
-  #   params.permit(:name, :description, :unit_price, :status)
-  # end
+  private
+  def bulk_discount_params
+    params.require(:bulk_discount).permit(:discount, :threshold)
+  end
 end

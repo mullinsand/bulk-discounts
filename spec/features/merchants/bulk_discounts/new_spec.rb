@@ -31,22 +31,31 @@ RSpec.describe 'New bulk discounts' do
       click_button 'Create Bulk discount'
     end
 
-    context 'if discount is over 100 or below 0' do
+    context 'if discount is over 100' do
       it 'returns merchant back to new discount page with sad path flash message' do
+        visit merchant_bulk_discounts_path(@merch1.id)
+        click_link("Create New Discount")
+  
+        fill_in :bulk_discount_discount, with: 101
+        fill_in :bulk_discount_threshold, with: 100
+        click_button 'Create Bulk discount'
 
+        expect(current_path).to eq(new_merchant_bulk_discount_path(@merch1))
+        expect(page).to have_content("Error: Discount must be less than or equal to 100")
       end
     end
 
-    xit 'filling out form takes merchant back to index page with new discount' do
+    it 'filling out form takes merchant back to index page with new discount' do
 
       visit merchant_bulk_discounts_path(@merch1.id)
       click_link("Create New Discount")
 
-      fill_in :discount, with: 50
-      fill_in :threshold, with: 100
-      click_button 'Create New Bulk Discount'
+      fill_in :bulk_discount_discount, with: 50
+      fill_in :bulk_discount_threshold, with: 100
+      click_button 'Create Bulk discount'
+
       expect(current_path).to eq(merchant_bulk_discounts_path(@merch1.id))
-      expect(page).to have_content('Bobs Bobbery')
+
       new_bulk_discount = BulkDiscount.last
       within '#discounts' do
         within "#discount_#{new_bulk_discount.id}" do
