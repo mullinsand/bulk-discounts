@@ -25,7 +25,7 @@ RSpec.describe 'New bulk discounts' do
 
       visit merchant_bulk_discounts_path(@merch1.id)
       click_link("Create New Discount")
-save_and_open_page
+
       fill_in :bulk_discount_discount, with: 50
       fill_in :bulk_discount_threshold, with: 100
       click_button 'Create Bulk discount'
