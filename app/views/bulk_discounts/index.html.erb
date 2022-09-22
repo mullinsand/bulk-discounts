@@ -1,0 +1,11 @@
+<h1>Bulk Discount Index</h1>
+
+<ul id='discounts'>
+  <% @bulk_discounts.each do |bulk_discount| %>
+    <li id = "discount_<%=bulk_discount.id%>">
+      <%= link_to "Bulk Discount ##{bulk_discount.id}", merchant_bulk_discount_path(bulk_discount.merchant_id, bulk_discount) %>
+      <p>Discount: <%= bulk_discount.discount %>%</p>
+      <p>Threshold: <%= bulk_discount.threshold %> items</p>
+    </li>
+  <% end%>
+</ul>
