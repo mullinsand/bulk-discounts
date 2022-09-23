@@ -27,26 +27,21 @@ class BulkDiscountsController < ApplicationController
     redirect_to merchant_bulk_discounts_path(params[:merchant_id])
   end
 
-  # def edit
-  #   @item = Item.find(params[:id])
-  #   @merchant = Merchant.find(params[:merchant_id])
-  # end
+  def edit
+    @bulk_discount = BulkDiscount.find(params[:id])
+  end
 
-  # def update
-  #   @item = Item.find(params[:id])
+  def update
+    @bulk_discount = BulkDiscount.find(params[:id])
 
-  #   if params[:status].present?
-  #     @item.update(item_params)
-  #     redirect_to merchant_items_path(params[:merchant_id])
-  #   elsif @item.update(item_params)
-  #     redirect_to merchant_item_path(params[:merchant_id], params[:id])
-  #     flash[:notice] = 'Item edited successfully!'
-  #   else
-  #     redirect_to edit_merchant_item_path(params[:merchant_id], params[:id])
-  #     flash[:alert] = "Error: #{@item.errors.full_messages.to_sentence}"
-  #   end
-
-  # end
+    if @bulk_discount.update(bulk_discount_params)
+      redirect_to merchant_bulk_discount_path(params[:merchant_id], params[:id])
+      flash[:notice] = 'Item edited successfully!'
+    else
+      redirect_to edit_merchant_bulk_discount_path(params[:merchant_id], params[:id])
+      flash[:alert] = "Error: #{@bulk_discount.errors.full_messages.to_sentence}"
+    end
+  end
 
   private
   def bulk_discount_params
