@@ -70,7 +70,8 @@ RSpec.describe 'bulk discounts Index' do
         end
       end
 
-      xit 'pressing delete button returns to index page where bulk discount no longer is' do
+      it 'pressing delete button returns to index page where bulk discount no longer is' do
+
         within '#discounts' do
           @all_bulk_discounts.each do |bulk_discount|
             within "#discount_#{bulk_discount.id}" do
