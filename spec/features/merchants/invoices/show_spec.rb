@@ -64,26 +64,45 @@ RSpec.describe 'Invoice Show Page' do
     end
   end
 
-  describe 'total_revenue' do
+  describe 'total_revenue and discounted revenue' do
     before :each do
       @merchant = create(:merchant)
 
-      @customer = create(:customer)
-      
-      @item = create(:item, merchant: @merchant, unit_price: 100)
-      @item_2 = create(:item, merchant: @merchant, unit_price: 100)
 
-      @invoice = create(:invoice, customer: @customer, status: 1)
-
-      @invoice_items = create(:invoice_item, item: @item, invoice: @invoice, unit_price: @item.unit_price, quantity: 1)
-      @invoice_items = create(:invoice_item, item: @item_2, invoice: @invoice, unit_price: @item_2.unit_price, quantity: 1)
+      @bulk_discount_1 = create(:bulk_discount, threshold: 2, discount: 20,merchant: @merchant)
+      @bulk_discount_2 = create(:bulk_discount, threshold: 4, discount: 40,merchant: @merchant)
+      @bulk_discount_3 = create(:bulk_discount, threshold: 6, discount: 40,merchant: @merchant)
+      @bulk_discount_4 = create(:bulk_discount, threshold: 8, discount: 50,merchant: @merchant)
+    
+      @items = create_list(:item, 3, merchant: @merchant)
+      @inv = create(:invoice)
+      #merchant has 2 items that qualify for discounts on this invoice
+      @inv_item_1 = create(:invoice_item, invoice: @inv, item: @items[0], unit_price: 500, quantity: 1)
+      @inv_item_2 = create(:invoice_item, invoice: @inv, item: @items[1], unit_price: 300, quantity: 5)
+      @inv_item_3 = create(:invoice_item, invoice: @inv, item: @items[2], unit_price: 200, quantity: 9) 
+      @other_merchant = create(:merchant)
+      @items_2 = create_list(:item, 2, merchant: @other_merchant)
+      #other merchant has 1 item that qualifies for discounts
+      @inv_item_4 = create(:invoice_item, invoice: @inv, item: @items_2[0], unit_price: 100, quantity: 9)
+      @inv_item_5 = create(:invoice_item, invoice: @inv, item: @items_2[1], unit_price: 400, quantity: 9)
+      @bulk_discount_5 = create(:bulk_discount, threshold: 3, discount: 50,merchant: @other_merchant)
+      @bulk_discount_6 = create(:bulk_discount, threshold: 4, discount: 80,merchant: @other_merchant)
     end
 
-    it 'shows the total revenue earned from the invoice' do
-      visit merchant_invoice_path(@merchant, @invoice)
+    it 'shows the total revenue earned by the merchant from the invoice' do
+      visit merchant_invoice_path(@merchant, @inv)
+      within '#total_revenue' do
+        expect(page).to have_content("Total Revenue:")
+        expect(page).to have_content("$38.00")
+      end
+    end
 
-      expect(page).to have_content("Total Revenue:")
-      expect(page).to have_content("$2.00")
+    it 'shows the total discounted revenue earned by the merchant from the invoice' do
+      visit merchant_invoice_path(@merchant, @inv)
+      within '#total_disco_revenue' do
+        expect(page).to have_content("Total Discounted Revenue:")
+        expect(page).to have_content("$23.00")
+      end
     end
   end
 
