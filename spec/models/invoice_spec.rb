@@ -204,9 +204,29 @@ RSpec.describe Invoice, type: :model do
 
       end
 
-      it 'can show the bulk discounts for an item on an invoice' do
-        require 'pry'; binding.pry
-        # @merchant.bulk_discounts.joins(merchant: [items: :invoices]).where("items.id = 2127").where("invoice_items.quantity >= bulk_discounts.threshold").order(discount: :desc).limit(1).first.discount
+      describe 'finds the best discount if a bulk discount applies to an invoice_item for all invoice_items' do
+        it 'only shows invoice_items where a discount is applicable' do
+          require 'pry'; binding.pry
+          expect()
+        end
+
+        it 'only shows invoice_items for a specific merchant' do
+          require 'pry'; binding.pry
+          expect()
+        end
+
+
+        it 'only shows invoice_items for a specific invoice' do
+          require 'pry'; binding.pry
+          expect()
+        end
+
+        it 'displays the best discount (in decimals) for every invoice_item' do
+
+        end
+
+
+
       end
     end
   end
