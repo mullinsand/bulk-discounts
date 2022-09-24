@@ -175,5 +175,39 @@ RSpec.describe Invoice, type: :model do
       expect(invoices[1].total_invoice_revenue_dollars).to eq(120.00)
       expect(invoices[2].total_invoice_revenue_dollars).to eq(270.00)
     end
+
+    describe '#discounted_revenue' do
+      before :each do
+        @merchant = create(:merchant)
+
+        @bulk_discount_1 = create(:bulk_discount, threshold: 2, discount: 20,merchant: @merchant)
+        @bulk_discount_2 = create(:bulk_discount, threshold: 4, discount: 40,merchant: @merchant)
+        @bulk_discount_3 = create(:bulk_discount, threshold: 6, discount: 40,merchant: @merchant)
+        @bulk_discount_4 = create(:bulk_discount, threshold: 8, discount: 50,merchant: @merchant)
+
+        
+        @items = create_list(:item, 3, merchant: @merchant)
+        #@items[0] - no discounts
+        #@items[1] - 40
+        #@items[2] - 50
+
+      
+        @inv = create(:invoice)
+
+    
+        @inv_item_1 = create(:invoice_item, invoice: @inv, item: @items[0], unit_price: 5, quantity: 1) #this will always belong to @merchants[0]
+        @inv_item_2 = create(:invoice_item, invoice: @inv, item: @items[1], unit_price: 3, quantity: 5) #this will always belong to @merchants[0]
+        @inv_item_3 = create(:invoice_item, invoice: @inv, item: @items[2], unit_price: 2, quantity: 9) #this will always belong to @merchants[0]   
+           #total revenue = 5 + 15 + 18 = 38
+           #total discount revenue = 5 + 9 (15*.6) + 9(18*.5) = 23
+           #total discount = 15 (38-23)
+
+      end
+
+      it 'can show the bulk discounts for an item on an invoice' do
+        require 'pry'; binding.pry
+        # @merchant.bulk_discounts.joins(merchant: [items: :invoices]).where("items.id = 2127").where("invoice_items.quantity >= bulk_discounts.threshold").order(discount: :desc).limit(1).first.discount
+      end
+    end
   end
 end

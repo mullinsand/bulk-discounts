@@ -8,6 +8,8 @@ class Invoice < ApplicationRecord
   has_many :transactions
   has_many :invoice_items
   has_many :items, through: :invoice_items
+  has_many :bulk_discounts, through: :invoice_items
+
 
 
   def find_invoice_item_quantity(invoice, item)
