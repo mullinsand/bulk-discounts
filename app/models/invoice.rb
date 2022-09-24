@@ -66,4 +66,9 @@ class Invoice < ApplicationRecord
   def merchant_total_discounted_revenue(merchant_id)
     merchant_total_invoice_revenue(merchant_id) - merchant_final_discount(merchant_id)
   end
+
+  def any_merchant_discounts?(merchant_id)
+    return false if merchant_id.bulk_discounts.empty?
+    !merchant_discounted_invoice_items(merchant_id).empty?
+  end
 end

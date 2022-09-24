@@ -104,6 +104,40 @@ RSpec.describe 'Invoice Show Page' do
         expect(page).to have_content("$23.00")
       end
     end
+
+    context 'if merchant has no applicable bulk discounts' do
+      it 'does not populate the page with a total discounted revenue' do
+        no_disco_invoice = create(:invoice)
+        other_merchant = create(:merchant)
+        items_2 = create_list(:item, 2, merchant: other_merchant)
+        #other merchant has 1 item that qualifies for discounts
+        inv_item_4 = create(:invoice_item, invoice: no_disco_invoice, item: items_2[0], unit_price: 1, quantity: 9)
+        inv_item_5 = create(:invoice_item, invoice: no_disco_invoice, item: items_2[1], unit_price: 4, quantity: 9)
+        bulk_discount_5 = create(:bulk_discount, threshold: 50, discount: 50,merchant: other_merchant)
+        bulk_discount_6 = create(:bulk_discount, threshold: 200, discount: 80,merchant: other_merchant)
+        visit merchant_invoice_path(other_merchant, no_disco_invoice)
+        expect(page).to_not have_css('#total_disco_revenue')
+        expect(page).to_not have_content("Total Discounted Revenue:")
+        expect(page).to_not have_content("$23.00")
+        expect(page).to have_content("No Bulk Discounts Applied")
+      end
+    end  
+
+    context 'if merchant has no bulk discounts' do
+      it 'does not populate the page with a total discounted revenue' do
+        no_disco_invoice = create(:invoice)
+        other_merchant = create(:merchant)
+        items_2 = create_list(:item, 2, merchant: other_merchant)
+        #other merchant has 1 item that qualifies for discounts
+        inv_item_4 = create(:invoice_item, invoice: no_disco_invoice, item: items_2[0], unit_price: 1, quantity: 9)
+        inv_item_5 = create(:invoice_item, invoice: no_disco_invoice, item: items_2[1], unit_price: 4, quantity: 9)
+        visit merchant_invoice_path(other_merchant, no_disco_invoice)
+        expect(page).to_not have_css('#total_disco_revenue')
+        expect(page).to_not have_content("Total Discounted Revenue:")
+        expect(page).to_not have_content("$23.00")
+        expect(page).to have_content("No Bulk Discounts Applied")
+      end
+    end  
   end
 
   describe 'update item status' do

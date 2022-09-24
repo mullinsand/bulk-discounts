@@ -61,5 +61,9 @@ class Merchant < ApplicationRecord
   def self.alpha
     order(:name)
   end
+
+  def bulk_discount_applied
+    
+  end
 end
 
