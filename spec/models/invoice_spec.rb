@@ -13,6 +13,7 @@ RSpec.describe Invoice, type: :model do
     it { should have_many :invoice_items }
     it { should have_many(:items).through(:invoice_items) }
     it { should have_many :transactions }
+    it { should have_many(:bulk_discounts).through(:invoice_items) }
   end
     
   describe 'factorybot' do
@@ -174,6 +175,130 @@ RSpec.describe Invoice, type: :model do
       expect(invoices[0].total_invoice_revenue_dollars).to eq(30.00)
       expect(invoices[1].total_invoice_revenue_dollars).to eq(120.00)
       expect(invoices[2].total_invoice_revenue_dollars).to eq(270.00)
+    end
+
+    describe '#discounted_revenue' do
+      before :each do
+        @merchant = create(:merchant)
+
+
+        @bulk_discount_1 = create(:bulk_discount, threshold: 2, discount: 20,merchant: @merchant)
+        @bulk_discount_2 = create(:bulk_discount, threshold: 4, discount: 40,merchant: @merchant)
+        @bulk_discount_3 = create(:bulk_discount, threshold: 6, discount: 40,merchant: @merchant)
+        @bulk_discount_4 = create(:bulk_discount, threshold: 8, discount: 50,merchant: @merchant)
+
+
+
+        
+        @items = create_list(:item, 3, merchant: @merchant)
+        #@items[0] - no discounts
+        #@items[1] - 40
+        #@items[2] - 50
+
+        @inv = create(:invoice)
+
+        #merchant has 2 items that qualify for discounts on this invoice
+        @inv_item_1 = create(:invoice_item, invoice: @inv, item: @items[0], unit_price: 5, quantity: 1)
+        @inv_item_2 = create(:invoice_item, invoice: @inv, item: @items[1], unit_price: 3, quantity: 5)
+        @inv_item_3 = create(:invoice_item, invoice: @inv, item: @items[2], unit_price: 2, quantity: 9) 
+
+           #total revenue = 5 + 15 + 18 = 38
+           #total discount revenue = 5 + 9 (15*.6) + 9(18*.5) = 23
+           #total discount = 15 (38-23)
+      end
+
+      describe 'finds the best discount if a bulk discount applies to an invoice_item for all invoice_items' do
+        it 'only shows invoice_items where a discount is applicable' do
+          expect(@inv.merchant_discounted_invoice_items(@merchant.id).pluck(:id)).to eq([@inv_item_2.id, @inv_item_3.id])
+          expect(@inv.merchant_discounted_invoice_items(@merchant.id).pluck(:id)).to_not include(@inv_item_1.id)
+        end
+
+        it 'only shows invoice_items for a specific merchant' do
+          other_merchant = create(:merchant)
+          items_2 = create_list(:item, 2, merchant: other_merchant)
+          #other merchant has 1 item that qualifies for discounts
+          inv_item_4 = create(:invoice_item, invoice: @inv, item: items_2[0], unit_price: 1, quantity: 9)
+          inv_item_5 = create(:invoice_item, invoice: @inv, item: items_2[1], unit_price: 4, quantity: 9)
+          bulk_discount_5 = create(:bulk_discount, threshold: 3, discount: 50,merchant: other_merchant)
+          bulk_discount_6 = create(:bulk_discount, threshold: 4, discount: 80,merchant: other_merchant)
+          expect(@inv.merchant_discounted_invoice_items(@merchant.id).pluck(:id)).to_not include(inv_item_4.id)
+          expect(@inv.merchant_discounted_invoice_items(@merchant.id).pluck(:id)).to_not include(inv_item_5.id)
+        end
+
+
+        it 'only shows invoice_items for a specific invoice' do
+          other_inv = create(:invoice)
+          inv_item_6 = create(:invoice_item, invoice: other_inv, item: @items[0], unit_price: 5, quantity: 1)
+          inv_item_7 = create(:invoice_item, invoice: other_inv, item: @items[1], unit_price: 3, quantity: 5)
+          expect(@inv.merchant_discounted_invoice_items(@merchant.id).pluck(:id)).to_not include(inv_item_6.id)
+          expect(@inv.merchant_discounted_invoice_items(@merchant.id).pluck(:id)).to_not include(inv_item_7.id)
+        end
+
+        it 'displays the best discount (in decimals) for every invoice_item' do
+          expect(@inv.merchant_discounted_invoice_items(@merchant.id).find_by(item_id: @items[2]).discount).to eq(0.5)
+          @bulk_discount_5 = create(:bulk_discount, threshold: 8, discount: 80,merchant: @merchant)
+          expect(@inv.merchant_discounted_invoice_items(@merchant).find_by(item_id: @items[2]).discount).to eq(0.8)
+        end
+      end
+
+      describe 'final discount' do
+        it 'sums the discount for all a merchants eligible items on an invoice' do
+          expect(@inv.merchant_final_discount(@merchant)).to eq(15)
+        end
+
+        it 'only sums the discounts from a single merchant' do
+          other_merchant = create(:merchant)
+          items_2 = create_list(:item, 2, merchant: other_merchant)
+          #other merchant has 1 item that qualifies for discounts
+          inv_item_4 = create(:invoice_item, invoice: @inv, item: items_2[0], unit_price: 1, quantity: 9)
+          inv_item_5 = create(:invoice_item, invoice: @inv, item: items_2[1], unit_price: 4, quantity: 9)
+          bulk_discount_5 = create(:bulk_discount, threshold: 3, discount: 50,merchant: other_merchant)
+          bulk_discount_6 = create(:bulk_discount, threshold: 4, discount: 80,merchant: other_merchant)
+          expect(@inv.merchant_final_discount(@merchant)).to eq(15)
+        end
+      end
+
+      describe '#merchant_total_invoice_revenue' do
+        it 'subtracts a merchants discounts from the total of an invoice for that merchant' do
+          expect(@inv.merchant_total_invoice_revenue(@merchant)).to eq(38)
+        end
+
+        it 'only sums the total from a single merchant' do
+          other_merchant = create(:merchant)
+          items_2 = create_list(:item, 2, merchant: other_merchant)
+          #other merchant has 1 item that qualifies for discounts
+          inv_item_4 = create(:invoice_item, invoice: @inv, item: items_2[0], unit_price: 1, quantity: 9)
+          inv_item_5 = create(:invoice_item, invoice: @inv, item: items_2[1], unit_price: 4, quantity: 9)
+          bulk_discount_5 = create(:bulk_discount, threshold: 3, discount: 50,merchant: other_merchant)
+          bulk_discount_6 = create(:bulk_discount, threshold: 4, discount: 80,merchant: other_merchant)
+          expect(@inv.merchant_total_invoice_revenue(@merchant)).to eq(38)
+        end
+
+      end
+
+      describe '#merchant_total_discounted_revenue' do
+        it 'subtracts a merchants discounts from the total of an invoice for that merchant' do
+          expect(@inv.merchant_total_discounted_revenue(@merchant)).to eq(23)
+        end
+      end
+
+      describe '#any_merchant_discounts?' do
+        it 'returns false if no discounts apply to the current invoice' do
+          no_disco_invoice = create(:invoice)
+          other_merchant = create(:merchant)
+          items_2 = create_list(:item, 2, merchant: other_merchant)
+          #other merchant has 1 item that qualifies for discounts
+          inv_item_4 = create(:invoice_item, invoice: no_disco_invoice, item: items_2[0], unit_price: 1, quantity: 9)
+          inv_item_5 = create(:invoice_item, invoice: no_disco_invoice, item: items_2[1], unit_price: 4, quantity: 9)
+          bulk_discount_5 = create(:bulk_discount, threshold: 50, discount: 50,merchant: other_merchant)
+          bulk_discount_6 = create(:bulk_discount, threshold: 200, discount: 80,merchant: other_merchant)
+          expect(no_disco_invoice.any_merchant_discounts?(other_merchant)).to eq(false)
+        end
+
+        it 'returns true if discounts apply to the current invoice' do
+          expect(@inv.any_merchant_discounts?(@merchant)).to eq(true)
+        end
+      end
     end
   end
 end
