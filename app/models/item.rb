@@ -40,4 +40,12 @@ class Item < ApplicationRecord
     .first
     .created_at
   end
+
+  def find_best_discount(invoice_id)
+    return nil if self.bulk_discounts.empty?
+    bulk_discounts
+    .where("? >= bulk_discounts.threshold", self.invoice_items.find_by(invoice_id: invoice_id).quantity)
+    .order(discount: :desc)
+    .first
+  end
 end
