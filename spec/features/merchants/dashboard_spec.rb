@@ -22,6 +22,11 @@ RSpec.describe 'Merchant dashboard' do
       expect(page).to have_link("Go To Merchant Items Index")
     end
 
+    it 'has a link to merchant bulk discount index' do
+      visit "/merchants/#{merch_1.id}/dashboard"
+      expect(page).to have_link("Go To Merchant Bulk Discount Index")
+    end
+
     it 'has a link to merchant invoices index' do
       visit "/merchants/#{merch_1.id}/dashboard"
       expect(page).to have_link("Go To Merchant Invoices Index")

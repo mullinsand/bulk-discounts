@@ -1,7 +1,8 @@
 <div id="merchant_name"><%=@merchant.name%></div>
 
-<%= link_to "Go To Merchant Items Index", "/merchants/#{@merchant.id}/items"%>
-<%= link_to "Go To Merchant Invoices Index", "/merchants/#{@merchant.id}/invoices"%>
+<%= link_to "Go To Merchant Items Index", "/merchants/#{@merchant.id}/items"%> <br>
+<%= link_to "Go To Merchant Invoices Index", "/merchants/#{@merchant.id}/invoices"%><br>
+<%= link_to "Go To Merchant Bulk Discount Index", merchant_bulk_discounts_path(@merchant)%><br>
 
 <div id="favorite_customers">
   <h2>Favorite Customers</h2>
