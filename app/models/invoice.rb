@@ -73,4 +73,34 @@ class Invoice < ApplicationRecord
     return false if merchant_id.bulk_discounts.empty?
     !merchant_discounted_invoice_items(merchant_id).empty?
   end
+
+
+
+  def admin_total_invoice_revenue
+    items
+    .joins(:invoice_items)
+    .sum("invoice_items.unit_price * invoice_items.quantity")
+  end
+
+  def admin_discounted_invoice_items
+    invoice_items.select('invoice_items.*, invoice_items.quantity * invoice_items.unit_price as revenue, max(bulk_discounts.discount)/100.0 as discount')
+    .joins(:bulk_discounts)
+    .where("invoice_items.quantity >= bulk_discounts.threshold")
+    .group(:id)
+  end
+
+  def admin_final_discount
+    Invoice
+    .select('sum(subquery.revenue * subquery.discount) as total_discount')
+    .from(self.admin_discounted_invoice_items)[0].total_discount
+  end
+
+  def admin_total_discounted_revenue
+    admin_total_invoice_revenue - admin_final_discount
+  end
+
+  def any_discounts?
+    return false if self.bulk_discounts.empty?
+    !admin_discounted_invoice_items.empty?
+  end
 end

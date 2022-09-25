@@ -130,7 +130,7 @@ RSpec.describe 'Invoice Show Page' do
       @inv_item_3 = create(:invoice_item, invoice: @inv, item: @items[2], unit_price: 200, quantity: 9) 
       @other_merchant = create(:merchant)
       @items_2 = create_list(:item, 2, merchant: @other_merchant)
-      #other merchant has 1 item that qualifies for discounts
+      #other merchant has 2 items that qualifies for discounts
       @inv_item_4 = create(:invoice_item, invoice: @inv, item: @items_2[0], unit_price: 100, quantity: 9)
       @inv_item_5 = create(:invoice_item, invoice: @inv, item: @items_2[1], unit_price: 400, quantity: 9)
       @bulk_discount_5 = create(:bulk_discount, threshold: 3, discount: 50,merchant: @other_merchant)
@@ -143,6 +143,7 @@ RSpec.describe 'Invoice Show Page' do
         expect(page).to have_content("Total Revenue:")
         expect(page).to have_content("$38.00")
       end
+      require 'pry'; binding.pry
     end
 
     it 'shows the total discounted revenue earned by the merchant from the invoice' do
@@ -258,5 +259,4 @@ RSpec.describe 'Invoice Show Page' do
     end
 
   end
-
 end

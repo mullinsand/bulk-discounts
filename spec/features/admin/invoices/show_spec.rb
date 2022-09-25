@@ -175,4 +175,82 @@ RSpec.describe 'The Admin Invoice Show' do
       end
     end
   end
+
+  describe 'admin invoice total_revenue and discounted revenue' do
+    before :each do
+      @merchant = create(:merchant)
+
+
+      @bulk_discount_1 = create(:bulk_discount, threshold: 2, discount: 20,merchant: @merchant)
+      @bulk_discount_2 = create(:bulk_discount, threshold: 4, discount: 40,merchant: @merchant)
+      @bulk_discount_3 = create(:bulk_discount, threshold: 6, discount: 40,merchant: @merchant)
+      @bulk_discount_4 = create(:bulk_discount, threshold: 8, discount: 50,merchant: @merchant)
+    
+      @items = create_list(:item, 3, merchant: @merchant)
+      @inv = create(:invoice)
+      #merchant has 2 items that qualify for discounts on this invoice
+      @inv_item_1 = create(:invoice_item, invoice: @inv, item: @items[0], unit_price: 500, quantity: 1)
+      @inv_item_2 = create(:invoice_item, invoice: @inv, item: @items[1], unit_price: 300, quantity: 5)
+      @inv_item_3 = create(:invoice_item, invoice: @inv, item: @items[2], unit_price: 200, quantity: 9) 
+      @other_merchant = create(:merchant)
+      @items_2 = create_list(:item, 3, merchant: @other_merchant)
+      @bulk_discount_5 = create(:bulk_discount, threshold: 3, discount: 25,merchant: @other_merchant)
+      @bulk_discount_6 = create(:bulk_discount, threshold: 4, discount: 50,merchant: @other_merchant)
+      #other merchant has 2 items that qualifies for discounts
+      @inv_item_4 = create(:invoice_item, invoice: @inv, item: @items_2[0], unit_price: 100, quantity: 9)
+      @inv_item_5 = create(:invoice_item, invoice: @inv, item: @items_2[1], unit_price: 400, quantity: 9)
+      @inv_item_6 = create(:invoice_item, invoice: @inv, item: @items_2[2], unit_price: 100, quantity: 2)
+
+      #total invoice revenue = 47 + 38 = $85
+      #total discount = 15 + 22.5 = $37.5
+      #total discount revenue = $47.5
+      visit admin_invoice_path(@inv)
+    end
+
+    it 'shows the total revenue earned on the invoice' do
+      within '#total_revenue' do
+        expect(page).to have_content("Total Revenue:")
+        expect(page).to have_content("$85.00")
+      end
+    end
+
+    it 'shows the total discounted revenue earned from the invoice' do
+      within '#total_disco_revenue' do
+        expect(page).to have_content("Total Discounted Revenue:")
+        expect(page).to have_content("$47.50")
+      end
+    end
+
+    context 'if merchant has no applicable bulk discounts' do
+      it 'does not populate the page with a total discounted revenue' do
+        no_disco_invoice = create(:invoice)
+        other_merchant = create(:merchant)
+        items_2 = create_list(:item, 2, merchant: other_merchant)
+        inv_item_4 = create(:invoice_item, invoice: no_disco_invoice, item: items_2[0], unit_price: 1, quantity: 9)
+        inv_item_5 = create(:invoice_item, invoice: no_disco_invoice, item: items_2[1], unit_price: 4, quantity: 9)
+        bulk_discount_5 = create(:bulk_discount, threshold: 50, discount: 50,merchant: other_merchant)
+        bulk_discount_6 = create(:bulk_discount, threshold: 200, discount: 80,merchant: other_merchant)
+        visit merchant_invoice_path(other_merchant, no_disco_invoice)
+
+        expect(page).to_not have_css('#total_disco_revenue')
+        expect(page).to_not have_content("Total Discounted Revenue:")
+        expect(page).to have_content("No Bulk Discounts Applied")
+      end
+    end  
+
+    context 'if merchant has no bulk discounts' do
+      it 'does not populate the page with a total discounted revenue' do
+        no_disco_invoice = create(:invoice)
+        other_merchant = create(:merchant)
+        items_2 = create_list(:item, 2, merchant: other_merchant)
+        inv_item_4 = create(:invoice_item, invoice: no_disco_invoice, item: items_2[0], unit_price: 1, quantity: 9)
+        inv_item_5 = create(:invoice_item, invoice: no_disco_invoice, item: items_2[1], unit_price: 4, quantity: 9)
+        visit merchant_invoice_path(other_merchant, no_disco_invoice)
+
+        expect(page).to_not have_css('#total_disco_revenue')
+        expect(page).to_not have_content("Total Discounted Revenue:")
+        expect(page).to have_content("No Bulk Discounts Applied")
+      end
+    end  
+  end
 end

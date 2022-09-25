@@ -25,6 +25,16 @@
 
 <% end %>
 
+<h4 id ='total_revenue'>
+  Total Revenue: $<%= number_with_precision ((@invoice.admin_total_invoice_revenue.to_f) / 100), precision: 2, delimiter: "," %>
+</h4>
+<% if @invoice.any_discounts? %>
+  <h4 id ='total_disco_revenue'>
+    Total Discounted Revenue: $<%= number_with_precision ((@invoice.admin_total_discounted_revenue.to_f) / 100), precision: 2, delimiter: "," %>
+  </h4>
+<%  else %>
+  <h4>No Bulk Discounts Applied</h4>
+<% end%>
 
 </section>
 
