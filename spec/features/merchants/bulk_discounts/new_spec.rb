@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'New bulk discounts' do
+  VCR.insert_cassette("holiday_data", :allow_playback_repeats => true)
   before :each do
     @merch1 = create(:merchant)
     @bulk_discount_2 = create(:bulk_discount, merchant: @merch1)
@@ -65,4 +66,5 @@ RSpec.describe 'New bulk discounts' do
       end
     end
   end
+  VCR.eject_cassette
 end

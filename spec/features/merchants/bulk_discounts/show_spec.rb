@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'bulk discounts show' do
+  VCR.insert_cassette("holiday_data", :allow_playback_repeats => true)
   describe "Show page has the discount and threshold for that bulk discount" do
     it 'shows discount and threshold for that bulk discount' do
       merch1 = create(:merchant)
@@ -22,4 +23,5 @@ RSpec.describe 'bulk discounts show' do
       expect(page).to_not have_css("#discount_#{bulk_discount_2.id}")
     end
   end
+  VCR.eject_cassette
 end
