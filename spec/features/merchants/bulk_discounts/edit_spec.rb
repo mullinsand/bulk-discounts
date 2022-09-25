@@ -10,6 +10,7 @@ RSpec.describe 'Bulk discount Edit' do
     @bulk_discount_4 = create(:bulk_discount, merchant: @merch1)
     @bulk_discount_5 = create(:bulk_discount)
   end
+
   describe "Can update bulk discount attributes" do
     it 'has a link to update bulk discount info' do
 
