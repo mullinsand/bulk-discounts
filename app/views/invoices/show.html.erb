@@ -10,17 +10,21 @@
 <br>
 
 <div class="items">
-  <% @invoice.items.each do |item| %>
+  <% @invoice.items.by_merchant(@merchant).each do |item| %>
     <div id="item-<%=item.id%>">
       Item Name: <%= item.name %> <br>
       Item Quantity: <%= @invoice.find_invoice_item_quantity(@invoice, item) %> <br>
       Item Price: $<%= number_with_precision ((item.unit_price.to_f) / 100), precision: 2, delimiter: "," %> <br>
-      Invoice Status: <%= @invoice.find_invoice_item_status(@invoice, item) %> 
+      Invoice Status: <%= @invoice.find_invoice_item_status(@invoice, item) %> <br>
+      <% if item.find_best_discount(@invoice) %>
+        <%= link_to "#{item.find_best_discount(@invoice).discount}% Discount Applied", merchant_bulk_discount_path(@merchant, item.find_best_discount(@invoice))%>
+      <% end %>
       <div id="status-update-<%=item.id%>">
         <%= render partial: 'update_item_status', locals: { path: merchant_invoice_item_path(item.merchant, invoice_id: @invoice, item_id: item.id), method: :patch, options_array: ["Pending", "Packaged", "Shipped"], button_text: 'Submit' } %>
       </div>
       <br>
       <br>
+    </div>
   <% end %>
 </div>
 

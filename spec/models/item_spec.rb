@@ -115,6 +115,54 @@ RSpec.describe Item, type: :model do
         expect(@item1.best_day).to eq @cus1_invoice.created_at
       end
     end
+
+    describe '#find best bulk discount' do
+      before :each do
+        @merchant = create(:merchant)
+  
+        @bulk_discount_1 = create(:bulk_discount, threshold: 2, discount: 20,merchant: @merchant)
+        @bulk_discount_2 = create(:bulk_discount, threshold: 4, discount: 40,merchant: @merchant)
+        @bulk_discount_3 = create(:bulk_discount, threshold: 6, discount: 40,merchant: @merchant)
+        @bulk_discount_4 = create(:bulk_discount, threshold: 8, discount: 50,merchant: @merchant)
+      
+        @items = create_list(:item, 3, merchant: @merchant)
+        @inv = create(:invoice)
+        #merchant has 2 items that qualify for discounts on this invoice
+        @inv_item_1 = create(:invoice_item, invoice: @inv, item: @items[0], unit_price: 500, quantity: 1)
+        @inv_item_2 = create(:invoice_item, invoice: @inv, item: @items[1], unit_price: 300, quantity: 5)
+        @inv_item_3 = create(:invoice_item, invoice: @inv, item: @items[2], unit_price: 200, quantity: 9) 
+        @other_merchant = create(:merchant)
+        @items_2 = create_list(:item, 2, merchant: @other_merchant)
+        #other merchant has 1 item that qualifies for discounts
+        @inv_item_4 = create(:invoice_item, invoice: @inv, item: @items_2[0], unit_price: 100, quantity: 9)
+        @inv_item_5 = create(:invoice_item, invoice: @inv, item: @items_2[1], unit_price: 400, quantity: 9)
+        @bulk_discount_5 = create(:bulk_discount, threshold: 3, discount: 50,merchant: @other_merchant)
+        @bulk_discount_6 = create(:bulk_discount, threshold: 4, discount: 80,merchant: @other_merchant)
+      end
+
+      it 'finds the bulk discounts that apply to the item and then returns the largest bulk discount' do
+        expect(@items[1].find_best_discount(@inv)).to eq(@bulk_discount_2)
+        expect(@items[2].find_best_discount(@inv)).to eq(@bulk_discount_4)
+      end
+
+      context 'if there are no bulk discounts available' do
+        it 'returns an empty array' do
+          expect(@items[0].find_best_discount(@inv)).to eq(nil)
+        end
+      end
+
+      context 'if the merchant has no bulk discounts' do
+        it 'returns an empty array' do
+          no_disco_invoice = create(:invoice)
+          another_merchant = create(:merchant)
+          items_3 = create_list(:item, 2, merchant: another_merchant)
+          #other merchant has 1 item that qualifies for discounts
+          inv_item_4 = create(:invoice_item, invoice: no_disco_invoice, item: items_3[0], unit_price: 1, quantity: 9)
+          inv_item_5 = create(:invoice_item, invoice: no_disco_invoice, item: items_3[1], unit_price: 4, quantity: 9)
+          expect(items_3[0].find_best_discount(no_disco_invoice)).to eq(nil)
+        end
+      end
+    end
   end
 
 

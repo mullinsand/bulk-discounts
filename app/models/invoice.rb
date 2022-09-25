@@ -12,6 +12,8 @@ class Invoice < ApplicationRecord
 
 
 
+
+
   def find_invoice_item_quantity(invoice, item)
     InvoiceItem.find_by(invoice: invoice, item: item).quantity
   end
