@@ -11,6 +11,7 @@ class Item < ApplicationRecord
   has_many :invoices, through: :invoice_items
   has_many :bulk_discounts, through: :merchant
 
+  scope :by_merchant, ->(merchant_id) { where(merchant_id: merchant_id)}
 
   def self.successful_transactions
     joins(invoices: :transactions)

@@ -62,8 +62,5 @@ class Merchant < ApplicationRecord
     order(:name)
   end
 
-  def bulk_discount_applied
-    
-  end
 end
 

@@ -64,6 +64,54 @@ RSpec.describe 'Invoice Show Page' do
     end
   end
 
+  describe 'link to applied discounts' do
+    before :each do
+      @merchant = create(:merchant)
+
+      @bulk_discount_1 = create(:bulk_discount, threshold: 2, discount: 20,merchant: @merchant)
+      @bulk_discount_2 = create(:bulk_discount, threshold: 4, discount: 40,merchant: @merchant)
+      @bulk_discount_3 = create(:bulk_discount, threshold: 6, discount: 40,merchant: @merchant)
+      @bulk_discount_4 = create(:bulk_discount, threshold: 8, discount: 50,merchant: @merchant)
+    
+      @items = create_list(:item, 3, merchant: @merchant)
+      @inv = create(:invoice)
+      #merchant has 2 items that qualify for discounts on this invoice
+      @inv_item_1 = create(:invoice_item, invoice: @inv, item: @items[0], unit_price: 500, quantity: 1)
+      @inv_item_2 = create(:invoice_item, invoice: @inv, item: @items[1], unit_price: 300, quantity: 5)
+      @inv_item_3 = create(:invoice_item, invoice: @inv, item: @items[2], unit_price: 200, quantity: 9) 
+      @other_merchant = create(:merchant)
+      @items_2 = create_list(:item, 2, merchant: @other_merchant)
+      #other merchant has 1 item that qualifies for discounts
+      @inv_item_4 = create(:invoice_item, invoice: @inv, item: @items_2[0], unit_price: 100, quantity: 9)
+      @inv_item_5 = create(:invoice_item, invoice: @inv, item: @items_2[1], unit_price: 400, quantity: 9)
+      @bulk_discount_5 = create(:bulk_discount, threshold: 3, discount: 50,merchant: @other_merchant)
+      @bulk_discount_6 = create(:bulk_discount, threshold: 4, discount: 80,merchant: @other_merchant)
+
+      visit merchant_invoice_path(@merchant, @inv)
+    end
+
+    it 'if applicable, underneath each listed item is a link to the applied discount show page' do
+      within ".items" do
+        within "#item-#{@items[1].id}" do
+          expect(page).to have_link("#{@bulk_discount_2.discount}% Discount Applied")
+        end
+        within "#item-#{@items[2].id}" do
+          expect(page).to have_link("#{@bulk_discount_4.discount}% Discount Applied")
+        end
+      end
+    end
+
+    context 'when no discount is applicable' do
+      it 'says nothing' do
+        within ".items" do
+          within "#item-#{@items[0].id}" do
+            expect(page).to_not have_content("Discount Applied")
+          end
+        end
+      end
+    end
+  end
+
   describe 'total_revenue and discounted revenue' do
     before :each do
       @merchant = create(:merchant)
