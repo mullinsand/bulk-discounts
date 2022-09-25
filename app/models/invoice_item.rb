@@ -6,6 +6,8 @@ class InvoiceItem < ApplicationRecord
   validates :quantity, presence: :true, numericality: { only_integer: true }
   validates :unit_price, presence: :true, numericality: { only_integer: true }
   validates_presence_of :status, inclusion: ["Pending", "Packaged", "Shipped"]
+  validates :applied_discount, presence: true,
+  numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100}
 
   belongs_to :item
   belongs_to :invoice
@@ -14,4 +16,5 @@ class InvoiceItem < ApplicationRecord
   def self.unshipped_invoice_items
     where.not(status: 2)
   end
+
 end

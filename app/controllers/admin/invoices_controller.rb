@@ -13,6 +13,12 @@ class Admin::InvoicesController < ApplicationController
     @invoice= Invoice.find(params[:id])
     @invoice.update(invoice_params)
     redirect_to admin_invoice_path(params[:id])
+
+    if @invoice.status == "Completed" && @invoice.any_discounts?
+      @invoice.invoice_items.each do |item|
+        
+      end
+    end
   end
 
 private
@@ -20,5 +26,6 @@ private
   def invoice_params
     params.permit(:status)
   end
+
 
 end

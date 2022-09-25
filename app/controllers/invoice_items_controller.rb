@@ -10,6 +10,6 @@ class InvoiceItemsController < ApplicationController
   private
 
   def invoice_item_params
-    params.permit(:item_id, :invoice_id, :status )
+    params.permit(:item_id, :invoice_id, :status, :applied_discount )
   end
 end
