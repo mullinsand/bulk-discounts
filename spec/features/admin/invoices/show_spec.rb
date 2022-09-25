@@ -281,23 +281,54 @@ RSpec.describe 'The Admin Invoice Show' do
       end
 
       it 'updates only invoice_items that have an applicable bulk discount' do
-        applied_discounts = @inv.invoice_items
-        expect(@inv_item_1.applied_discount).to eq(0)
+
         expect(@inv_item_2.applied_discount).to eq(0)
+        expect(@inv_item_3.applied_discount).to eq(0)
+        expect(@inv_item_4.applied_discount).to eq(0)
+        expect(@inv_item_5.applied_discount).to eq(0)
 
         visit admin_invoice_path(@inv)
           
         select("Completed")
         click_button 'Submit'
 
-        expect(InvoiceItem.find(@inv_item_1.id).applied_discount).to eq(0)
         expect(InvoiceItem.find(@inv_item_2.id).applied_discount).to eq(40)
         expect(InvoiceItem.find(@inv_item_3.id).applied_discount).to eq(50)
         expect(InvoiceItem.find(@inv_item_4.id).applied_discount).to eq(80)
         expect(InvoiceItem.find(@inv_item_5.id).applied_discount).to eq(80)
       end
+
+      context 'invoice_items that have no applicable bulk discount' do
+        it 'leaves the applied discount attribute at 0 (default)' do
+          expect(@inv_item_1.applied_discount).to eq(0)
+  
+          visit admin_invoice_path(@inv)
+            
+          select("Completed")
+          click_button 'Submit'
+  
+          expect(InvoiceItem.find(@inv_item_1.id).applied_discount).to eq(0)
+        end
+      end
+
+      it 'updates only invoice_items that are on the invoice' do
+        other_invoice = create(:invoice, status: "In Progress")
+        other_merchant = create(:merchant)
+        items_3 = create_list(:item, 2, merchant: other_merchant)
+        #other merchant has 1 item that qualifies for discounts
+        inv_item_4 = create(:invoice_item, invoice: other_invoice, item: items_3[0], unit_price: 1, quantity: 9)
+        inv_item_5 = create(:invoice_item, invoice: other_invoice, item: items_3[1], unit_price: 4, quantity: 9)
+        bulk_discount_5 = create(:bulk_discount, threshold: 5, discount: 50,merchant: other_merchant)
+        bulk_discount_6 = create(:bulk_discount, threshold: 200, discount: 80,merchant: other_merchant)
+
+        visit admin_invoice_path(@inv)
+          
+        select("Completed")
+        click_button 'Submit'
+
+        expect(InvoiceItem.find(inv_item_4.id).applied_discount).to eq(0)
+        expect(InvoiceItem.find(inv_item_5.id).applied_discount).to eq(0)
+      end
     end
   end
 end
-
-#13, 53, 229, 230
