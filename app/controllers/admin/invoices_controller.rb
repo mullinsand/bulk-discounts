@@ -18,13 +18,6 @@ class Admin::InvoicesController < ApplicationController
 private
   
   def invoice_params
-    if params[:status] == "0"
-      params[:status] = 0
-    elsif params[:status] == "1"
-      params[:status] = 1.
-    elsif params[:status] == "2"
-      params[:status] = 2
-    end
     params.permit(:status)
   end
 
