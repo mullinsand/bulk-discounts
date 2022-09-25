@@ -55,6 +55,18 @@ RSpec.describe 'Bulk discount Edit' do
         expect(page).to have_content(100)
       end
     end
+
+    context 'when info is not added correctly' do
+      it 'not filling in fields properly returns back to edit page with error message' do
+        visit merchant_bulk_discount_path(@merch1.id, @bulk_discount_1)
+        click_link("Edit Bulk Discount")
+        fill_in :bulk_discount_discount, with: 101
+        fill_in :bulk_discount_threshold, with: 100
+        click_button("Update Bulk discount")
+        expect(current_path).to eq(edit_merchant_bulk_discount_path(@merch1.id, @bulk_discount_1))
+        expect(page).to have_content("Error: Discount must be less than or equal to 100")
+      end
+    end
   end
   VCR.eject_cassette
 end
