@@ -300,5 +300,88 @@ RSpec.describe Invoice, type: :model do
         end
       end
     end
+
+    describe '# admin invoice discounted_revenue' do
+      before :each do
+        @merchant = create(:merchant)
+
+
+        @bulk_discount_1 = create(:bulk_discount, threshold: 2, discount: 20,merchant: @merchant)
+        @bulk_discount_2 = create(:bulk_discount, threshold: 4, discount: 40,merchant: @merchant)
+        @bulk_discount_3 = create(:bulk_discount, threshold: 6, discount: 40,merchant: @merchant)
+        @bulk_discount_4 = create(:bulk_discount, threshold: 8, discount: 50,merchant: @merchant)
+      
+        @items = create_list(:item, 3, merchant: @merchant)
+        #@items[0] - no discounts
+        #@items[1] - 40
+        #@items[2] - 50
+
+        @inv = create(:invoice)
+
+        #merchant has 2 items that qualify for discounts on this invoice
+        @inv_item_1 = create(:invoice_item, invoice: @inv, item: @items[0], unit_price: 5, quantity: 1)
+        @inv_item_2 = create(:invoice_item, invoice: @inv, item: @items[1], unit_price: 3, quantity: 5)
+        @inv_item_3 = create(:invoice_item, invoice: @inv, item: @items[2], unit_price: 2, quantity: 9) 
+
+           #total revenue = 5 + 15 + 18 = 38
+           #total discount = 15 (38-23)
+           #total discount revenue = 5 + 9 (15*.6) + 9(18*.5) = 23
+        @other_merchant = create(:merchant)
+        @bulk_discount_5 = create(:bulk_discount, threshold: 3, discount: 25,merchant: @other_merchant)
+        @bulk_discount_6 = create(:bulk_discount, threshold: 4, discount: 50,merchant: @other_merchant)
+        @items_2 = create_list(:item, 3, merchant: @other_merchant)
+        #other merchant has 2 items that qualifies for discounts
+        @inv_item_4 = create(:invoice_item, invoice: @inv, item: @items_2[0], unit_price: 1, quantity: 9)
+        @inv_item_5 = create(:invoice_item, invoice: @inv, item: @items_2[1], unit_price: 4, quantity: 9)
+        @inv_item_6 = create(:invoice_item, invoice: @inv, item: @items_2[2], unit_price: 1, quantity: 2)
+          #total revenue = 9 + 36 + 2 = 47
+          #total discount = 4.5 + 18 = 22.5
+          #total discount revenue = 47-22.5 = 24.5
+
+          #total invoice revenue = 47 + 38 = 85
+          #total discount = 15 + 22.5 = 37.5
+          #total discount revenue = 47.5
+      end
+
+      describe 'finds the best discount if a bulk discount applies to an invoice_item for all invoice_items' do
+        it 'only shows invoice_items where a discount is applicable' do
+          expect(@inv.admin_discounted_invoice_items.pluck(:id).sort).to eq([@inv_item_2.id, @inv_item_3.id, @inv_item_4.id , @inv_item_5.id])
+          expect(@inv.admin_discounted_invoice_items.pluck(:id)).to_not include(@inv_item_1.id)
+          expect(@inv.admin_discounted_invoice_items.pluck(:id)).to_not include(@inv_item_6.id)
+        end
+
+        it 'only shows invoice_items for a specific invoice' do
+          other_inv = create(:invoice)
+          inv_item_6 = create(:invoice_item, invoice: other_inv, item: @items[0], unit_price: 5, quantity: 1)
+          inv_item_7 = create(:invoice_item, invoice: other_inv, item: @items[1], unit_price: 3, quantity: 5)
+          expect(@inv.admin_discounted_invoice_items.pluck(:id)).to_not include(inv_item_6.id)
+          expect(@inv.admin_discounted_invoice_items.pluck(:id)).to_not include(inv_item_7.id)
+        end
+
+        it 'displays the best discount (in decimals) for every invoice_item' do
+          expect(@inv.admin_discounted_invoice_items.find_by(item_id: @items[2]).discount).to eq(0.5)
+          @bulk_discount_5 = create(:bulk_discount, threshold: 8, discount: 80,merchant: @merchant)
+          expect(@inv.admin_discounted_invoice_items.find_by(item_id: @items[2]).discount).to eq(0.8)
+        end
+      end
+
+      describe 'final discount' do
+        it 'sums the discount for all eligible items on an invoice' do
+          expect(@inv.admin_final_discount).to eq(37.5)
+        end
+      end
+
+      describe 'admin_total_invoice_revenue' do
+        it 'subtracts discounts from the total of an invoice' do
+          expect(@inv.total_invoice_revenue).to eq(85)
+        end
+      end
+
+      describe '#admin_total_discounted_revenue' do
+        it 'subtracts discounts from the total of an invoice' do
+          expect(@inv.admin_total_discounted_revenue).to eq(47.5)
+        end
+      end
+    end
   end
 end
