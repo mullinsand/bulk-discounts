@@ -382,6 +382,24 @@ RSpec.describe Invoice, type: :model do
           expect(@inv.admin_total_discounted_revenue).to eq(47.5)
         end
       end
+
+      describe '#any_discounts?' do
+        it 'returns false if no discounts apply to the current invoice' do
+          no_disco_invoice = create(:invoice)
+          other_merchant = create(:merchant)
+          items_2 = create_list(:item, 2, merchant: other_merchant)
+          #other merchant has 1 item that qualifies for discounts
+          inv_item_4 = create(:invoice_item, invoice: no_disco_invoice, item: items_2[0], unit_price: 1, quantity: 9)
+          inv_item_5 = create(:invoice_item, invoice: no_disco_invoice, item: items_2[1], unit_price: 4, quantity: 9)
+          bulk_discount_5 = create(:bulk_discount, threshold: 50, discount: 50,merchant: other_merchant)
+          bulk_discount_6 = create(:bulk_discount, threshold: 200, discount: 80,merchant: other_merchant)
+          expect(no_disco_invoice.any_merchant_discounts?(other_merchant)).to eq(false)
+        end
+
+        it 'returns true if discounts apply to the current invoice' do
+          expect(@inv.any_discounts?).to eq(true)
+        end
+      end
     end
   end
 end
