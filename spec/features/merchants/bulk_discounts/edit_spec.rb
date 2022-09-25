@@ -68,6 +68,20 @@ RSpec.describe 'Bulk discount Edit' do
         expect(page).to have_content("Error: Discount must be less than or equal to 100")
       end
     end
+
+    context 'cannot update bulk discount if applied to an item with an in progess invoice' do
+      it 'displays sad path message when attempting to update an item with in-progress invoice' do
+        shady_merchant = create(:merchant)
+        discount_with_invoice = create(:bulk_discount, threshold: 2, merchant: shady_merchant)
+        in_progress_invoice = create(:invoice, status: 0)
+        item_with_discount = create(:item, merchant: shady_merchant)
+        invoice_item_pending = create(:invoice_item, invoice: in_progress_invoice, item: item_with_discount, quantity: 4)
+        visit merchant_bulk_discount_path(shady_merchant, discount_with_invoice)
+        click_link("Edit Bulk Discount")
+        expect(page).to have_current_path(merchant_bulk_discount_path(shady_merchant, discount_with_invoice))
+        expect(page).to have_content("Cannot update discount #{discount_with_invoice.id} because it has been applied to a pending invoice")
+      end
+    end
   end
   VCR.eject_cassette
 end

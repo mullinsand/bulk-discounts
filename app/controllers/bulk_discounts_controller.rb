@@ -1,4 +1,5 @@
 class BulkDiscountsController < ApplicationController
+
   def index
     @bulk_discounts = Merchant.find(params[:merchant_id]).bulk_discounts
     @holidays = HolidayFacade.get_holidays
@@ -24,17 +25,25 @@ class BulkDiscountsController < ApplicationController
   end
 
   def destroy
-    BulkDiscount.destroy(params[:id])
+    bulk_discount = BulkDiscount.find(params[:id])
+    if bulk_discount.has_pending_invoices
+      flash[:alert] = "Cannot delete discount #{bulk_discount.id} because it has been applied to a pending invoice"
+    else
+      bulk_discount.destroy
+    end
     redirect_to merchant_bulk_discounts_path(params[:merchant_id])
   end
 
   def edit
     @bulk_discount = BulkDiscount.find(params[:id])
+    if @bulk_discount.has_pending_invoices
+      flash[:alert] = "Cannot update discount #{@bulk_discount.id} because it has been applied to a pending invoice"
+      redirect_to merchant_bulk_discount_path(params[:merchant_id], params[:id])
+    end
   end
 
   def update
     @bulk_discount = BulkDiscount.find(params[:id])
-
     if @bulk_discount.update(bulk_discount_params)
       redirect_to merchant_bulk_discount_path(params[:merchant_id], params[:id])
       flash[:notice] = 'Bulk discount edited successfully!'
@@ -48,4 +57,5 @@ class BulkDiscountsController < ApplicationController
   def bulk_discount_params
     params.require(:bulk_discount).permit(:discount, :threshold)
   end
+
 end

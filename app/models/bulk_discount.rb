@@ -9,4 +9,7 @@ class BulkDiscount < ApplicationRecord
   has_many :invoice_items, through: :items
   has_many :invoices, through: :invoice_items
 
+  def has_pending_invoices
+    !invoices.where(status: 0).empty?
+  end
 end

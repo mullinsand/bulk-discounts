@@ -83,6 +83,22 @@ RSpec.describe 'bulk discounts Index' do
           end
         end
       end
+
+      context 'cannot delete bulk discount if applied to an item with an in progess invoice' do
+        it 'displays sad path message when attempting to delete an item with in-progress invoice' do
+          shady_merchant = create(:merchant)
+          discount_with_invoice = create(:bulk_discount, threshold: 2, merchant: shady_merchant)
+          in_progress_invoice = create(:invoice, status: 0)
+          item_with_discount = create(:item, merchant: shady_merchant)
+          invoice_item_pending = create(:invoice_item, invoice: in_progress_invoice, item: item_with_discount, quantity: 4)
+          visit merchant_bulk_discounts_path(shady_merchant.id)
+          within "#discount_#{discount_with_invoice.id}" do
+            click_button("Delete")
+            expect(page).to have_current_path(merchant_bulk_discounts_path(shady_merchant.id))
+          end
+          expect(page).to have_content("Cannot delete discount #{discount_with_invoice.id} because it has been applied to a pending invoice")
+        end
+      end
     end
   end
 
