@@ -1,6 +1,13 @@
 <h1>Bulk Discount Index</h1>
-
-
+<h2>Upcoming Holidays</h2>
+<ul id='holidays'>
+  <% @holidays.each do |holiday| %>
+    <li id = "discount_<%=holiday.date%>">
+      <p><%= holiday.name %> on <%= holiday.date %></p>
+    </li>
+  <% end%>
+</ul>
+<h2> Bulk Discounts </h2>
 <ul id='discounts'>
   <% @bulk_discounts.each do |bulk_discount| %>
     <li id = "discount_<%=bulk_discount.id%>">

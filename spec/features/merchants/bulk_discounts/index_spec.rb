@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'bulk discounts Index' do
+  VCR.insert_cassette("holiday_data", :allow_playback_repeats => true)
   describe "A list of all bulk discount names" do
     it 'shows the names of each bulk discount' do
       merch1 = create(:merchant)
@@ -119,4 +120,5 @@ RSpec.describe 'bulk discounts Index' do
       end
     end
   end
+  VCR.eject_cassette
 end
