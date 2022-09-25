@@ -1,9 +1,9 @@
-class Teammate
-  attr_reader :username,
-              :commits
+class Holiday
+  attr_reader :name,
+              :date
 
   def initialize(data)
-    @username = data[:login]
-    @commits = data[:contributions]
+    @name = data[:name]
+    @date = data[:date]
   end
 end
