@@ -143,7 +143,6 @@ RSpec.describe 'Invoice Show Page' do
         expect(page).to have_content("Total Revenue:")
         expect(page).to have_content("$38.00")
       end
-      require 'pry'; binding.pry
     end
 
     it 'shows the total discounted revenue earned by the merchant from the invoice' do

@@ -84,4 +84,39 @@ RSpec.describe 'bulk discounts Index' do
       end
     end
   end
+
+  describe 'Upcoming Holidays' do
+    before :each do
+      @merch1 = create(:merchant)
+      @bulk_discount_1 = create(:bulk_discount, merchant: @merch1)
+      @bulk_discount_2 = create(:bulk_discount, merchant: @merch1)
+      @bulk_discount_3 = create(:bulk_discount, merchant: @merch1)
+      @bulk_discount_4 = create(:bulk_discount, merchant: @merch1)
+      @bulk_discount_5 = create(:bulk_discount)
+      
+      @upcoming_vcr_holidays = [
+        {name: "Columbus Day",
+        date: "2022-10-10"},
+        {name: "Veterans Day",
+          date: "2022-11-11"},
+        {name: "Thanksgiving Day",
+          date: "2022-11-24"}
+      ]
+      visit merchant_bulk_discounts_path(@merch1.id)
+    end
+    it "has a section with the header 'Upcoming Holidays'" do
+      expect(page).to have_content("Upcoming Holidays")
+    end
+
+    it "lists the name and date of the next 3 US holidays" do
+
+      within '#holidays' do
+        @upcoming_vcr_holidays.each do |holiday|
+          within "#holiday-#{holiday[:date]}"
+          expect(page).to have_content(holiday[:name])
+          expect(page).to have_content(holiday[:date])
+        end
+      end
+    end
+  end
 end
