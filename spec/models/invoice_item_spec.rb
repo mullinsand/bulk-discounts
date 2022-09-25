@@ -10,6 +10,8 @@ RSpec.describe InvoiceItem, type: :model do
     it { should validate_numericality_of(:unit_price) }
     it { should validate_presence_of :status }
     it { should define_enum_for(:status).with_values(["Pending", "Packaged", "Shipped"])}
+    it { should validate_presence_of :applied_discount }
+    it { should validate_numericality_of(:applied_discount).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(100) }
   end
 
   describe 'relationships' do
@@ -46,5 +48,16 @@ RSpec.describe InvoiceItem, type: :model do
         expect(InvoiceItem.unshipped_invoice_items.count).to eq(10)
       end
     end
+
+    describe "#update_applied_discounts" do
+      it 'finds the discount applicable for a specific invoice_item' do
+
+      end
+
+      it 'updates the applied_discount column for that invoice_item' do |variable|
+        
+      end
+    end
   end
+
 end
