@@ -10,6 +10,7 @@ RSpec.describe 'New bulk discounts' do
     @bulk_discount_4 = create(:bulk_discount, merchant: @merch1)
     @bulk_discount_5 = create(:bulk_discount)
   end
+
   describe "Create a new bulk discount" do
     it 'has a link to create new discount on index page' do
       visit merchant_bulk_discounts_path(@merch1.id)

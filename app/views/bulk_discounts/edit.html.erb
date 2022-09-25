@@ -1,10 +1,2 @@
 <h1>Edit Bulk Discount</h1>
-<%= form_with model: @bulk_discount, url: merchant_bulk_discount_path do |f| %>
-  <%= f.label :discount, 'Discount %' %>
-  <%= f.text_field :discount %>
-
-  <%= f.label :threshold %>
-  <%= f.text_field :threshold %>
-
-  <%= f.submit %>
-<% end %>
+<%= render partial: 'bulk_discount_model_form', locals: { path: merchant_bulk_discount_path } %>
