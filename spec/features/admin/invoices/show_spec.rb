@@ -253,4 +253,51 @@ RSpec.describe 'The Admin Invoice Show' do
       end
     end  
   end
+
+  describe 'when a invoice is updated to completed' do
+    describe 'it updates all invoice_items associated with it with the appropriate applied discounts' do
+      before :each do
+        @merchant = create(:merchant)
+
+
+        @bulk_discount_1 = create(:bulk_discount, threshold: 2, discount: 20,merchant: @merchant)
+        @bulk_discount_2 = create(:bulk_discount, threshold: 4, discount: 40,merchant: @merchant)
+        @bulk_discount_3 = create(:bulk_discount, threshold: 6, discount: 40,merchant: @merchant)
+        @bulk_discount_4 = create(:bulk_discount, threshold: 8, discount: 50,merchant: @merchant)
+      
+        @items = create_list(:item, 3, merchant: @merchant)
+        @inv = create(:invoice, status: "In Progress")
+        #merchant has 2 items that qualify for discounts on this invoice
+        @inv_item_1 = create(:invoice_item, invoice: @inv, item: @items[0], unit_price: 500, quantity: 1)
+        @inv_item_2 = create(:invoice_item, invoice: @inv, item: @items[1], unit_price: 300, quantity: 5)
+        @inv_item_3 = create(:invoice_item, invoice: @inv, item: @items[2], unit_price: 200, quantity: 9) 
+        @other_merchant = create(:merchant)
+        @items_2 = create_list(:item, 2, merchant: @other_merchant)
+        #other merchant has 2 items that qualifies for discounts
+        @inv_item_4 = create(:invoice_item, invoice: @inv, item: @items_2[0], unit_price: 100, quantity: 9)
+        @inv_item_5 = create(:invoice_item, invoice: @inv, item: @items_2[1], unit_price: 400, quantity: 9)
+        @bulk_discount_5 = create(:bulk_discount, threshold: 3, discount: 50,merchant: @other_merchant)
+        @bulk_discount_6 = create(:bulk_discount, threshold: 4, discount: 80,merchant: @other_merchant)
+      end
+
+      it 'updates only invoice_items that have an applicable bulk discount' do
+        applied_discounts = @inv.invoice_items
+        expect(@inv_item_1.applied_discount).to eq(0)
+        expect(@inv_item_2.applied_discount).to eq(0)
+
+        visit admin_invoice_path(@inv)
+          
+        select("Completed")
+        click_button 'Submit'
+
+        expect(InvoiceItem.find(@inv_item_1.id).applied_discount).to eq(0)
+        expect(InvoiceItem.find(@inv_item_2.id).applied_discount).to eq(40)
+        expect(InvoiceItem.find(@inv_item_3.id).applied_discount).to eq(50)
+        expect(InvoiceItem.find(@inv_item_4.id).applied_discount).to eq(80)
+        expect(InvoiceItem.find(@inv_item_5.id).applied_discount).to eq(80)
+      end
+    end
+  end
 end
+
+#13, 53, 229, 230
