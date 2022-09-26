@@ -12,4 +12,17 @@ class BulkDiscount < ApplicationRecord
   def has_pending_invoices
     !invoices.where(status: 0).empty?
   end
+
+  # def useless_discount?
+  #   if self.better_discount_already?
+  #     # redirect_to new_merchant_bulk_discount_path(params[:merchant_id])
+  #     # flash[:alert] = "This discount is superfluous and will not be added, try again"
+  #   else
+  #     yield 
+  #   end
+  # end
+
+  def better_discount_already?
+    BulkDiscount.where("discount >= ? and threshold <= ?", self.discount, self.threshold).empty?
+  end
 end
