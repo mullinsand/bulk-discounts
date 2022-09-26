@@ -3,6 +3,8 @@ class BulkDiscount < ApplicationRecord
     numericality: { greater_than: 0, less_than_or_equal_to: 100}
   validates_presence_of :threshold
   validates_presence_of :merchant_id
+  validates :name, presence: true
+  validates :discount_type, presence: true
 
   belongs_to :merchant
   has_many :items, through: :merchant
@@ -24,5 +26,9 @@ class BulkDiscount < ApplicationRecord
 
   def better_discount_already?
     BulkDiscount.where("discount >= ? and threshold <= ?", self.discount, self.threshold).empty?
+  end
+
+  def self.find_holiday_discount(holiday)
+    find_by(discount_type: holiday)
   end
 end

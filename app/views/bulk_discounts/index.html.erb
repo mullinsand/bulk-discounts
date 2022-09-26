@@ -1,9 +1,16 @@
 <h1>Bulk Discount Index</h1>
-<h2>Upcoming Holidays</h2>
+<h2>Upcoming Holidays/ Holiday Discounts</h2>
 <ul id='holidays'>
   <% @holidays.each do |holiday| %>
     <li id = "discount_<%=holiday.date%>">
-      <p><%= holiday.name %> on <%= holiday.date %></p>
+      <p>
+        <%= holiday.name %> on <%= holiday.date %>
+        <% if @bulk_discounts.find_holiday_discount(holiday.name)%>
+          <%= link_to "View discount", merchant_bulk_discount_path(@bulk_discount.first.merchant_id, @bulk_discount.find_holiday_discount) %>
+        <% else %>
+          <%= button_to "Create Holiday Discount!", new_merchant_bulk_discount_path, params: { holiday: holiday.name }%>
+        <% end%>
+      </p>
     </li>
   <% end%>
 </ul>
@@ -11,7 +18,11 @@
 <ul id='discounts'>
   <% @bulk_discounts.each do |bulk_discount| %>
     <li id = "discount_<%=bulk_discount.id%>">
-      <%= link_to "Bulk Discount ##{bulk_discount.id}", merchant_bulk_discount_path(bulk_discount.merchant_id, bulk_discount)%>
+      <%if bulk_discount.discount_type == "normal" %>
+        <%= link_to "Bulk Discount ##{bulk_discount.id}", merchant_bulk_discount_path(bulk_discount.merchant_id, bulk_discount)%>
+      <% else %>
+        <%= link_to "#{bulk_discount.name}", merchant_bulk_discount_path(bulk_discount.merchant_id, bulk_discount)%>
+      <% end%>
       <%= form_with model: bulk_discount, url: merchant_bulk_discount_path(bulk_discount.merchant_id, bulk_discount), method: :delete do |form|%>
         <%= form.submit "Delete"%>
       <%end%>
