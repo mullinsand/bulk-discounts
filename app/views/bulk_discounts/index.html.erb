@@ -6,9 +6,9 @@
       <p>
         <%= holiday.name %> on <%= holiday.date %>
         <% if @bulk_discounts.find_holiday_discount(holiday.name)%>
-          <%= link_to "View discount", merchant_bulk_discount_path(@bulk_discount.first.merchant_id, @bulk_discount.find_holiday_discount) %>
+          <%= link_to "View discount", merchant_bulk_discount_path(@bulk_discounts.first.merchant_id, @bulk_discounts.find_holiday_discount(holiday.name)) %>
         <% else %>
-          <%= button_to "Create Holiday Discount!", new_merchant_bulk_discount_path, params: { holiday: holiday.name }%>
+          <%= button_to "Create Holiday Discount!", new_merchant_bulk_discount_path, method: :get, params: { holiday: holiday.name}%>
         <% end%>
       </p>
     </li>

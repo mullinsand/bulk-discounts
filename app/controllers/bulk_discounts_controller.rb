@@ -10,11 +10,11 @@ class BulkDiscountsController < ApplicationController
   end
 
   def new
-
-    # if params[:holiday]
-
-    # end
-    @bulk_discount = BulkDiscount.new
+    if params[:holiday]
+      @bulk_discount = BulkDiscount.new(name: "#{params[:holiday]} discount", discount: 30, threshold: 2, discount_type: params[:holiday])
+    else
+      @bulk_discount = BulkDiscount.new
+    end
   end
 
   def create
@@ -65,7 +65,7 @@ class BulkDiscountsController < ApplicationController
 
   private
   def bulk_discount_params
-    params.require(:bulk_discount).permit(:discount, :threshold)
+    params.require(:bulk_discount).permit(:discount, :threshold, :name, :discount_type)
   end
 
 

@@ -1,5 +1,5 @@
 <%= form_with model: @bulk_discount, url: path do |f| %>
-  <%= f.label :name, 'Name' %>
+  <%= f.label :name, 'Discount name' %>
   <%= f.text_field :name %>
 
   <%= f.label :discount, 'Discount %' %>
@@ -7,6 +7,10 @@
 
   <%= f.label :threshold %>
   <%= f.text_field :threshold %>
+
+  <% if @bulk_discount.discount_type != "normal" %>
+    <%= f.hidden_field :discount_type, value: @bulk_discount.discount_type %>
+  <% end%>
 
   <%= f.submit %>
 <% end %>
