@@ -12,29 +12,14 @@ class BulkDiscount < ApplicationRecord
   has_many :invoice_items, through: :items
   has_many :invoices, through: :invoice_items
 
-  # before_update 
-  # before_destroy
+  # before_update :has_pending_invoices?
+  before_destroy :has_pending_invoices?
 
-  def has_pending_invoices
-    !invoices.where(status: 0).empty?
+  def find_pending_invoices
+    return [] if invoices.empty?
+    invoices
+    .where("invoices.status = 0 and invoice_items.quantity >= ?", self.threshold)
   end
-
-  # def no_pending_invoices
-  #   return true if self.invoices.where(status: 0).empty?
-  # end
-
-  # def useless_discount?
-  #   if self.better_discount_already?
-  #     # redirect_to new_merchant_bulk_discount_path(params[:merchant_id])
-  #     # flash[:alert] = "This discount is superfluous and will not be added, try again"
-  #   else
-  #     yield 
-  #   end
-  # end
-
-  # def better_discount_already?
-  #   BulkDiscount.where("discount >= ? and threshold <= ? and merchant_id = ?", self.discount, self.threshold, self.merchant_id).empty?
-  # end
 
   def self.find_holiday_discount(holiday)
     find_by(discount_type: holiday)
@@ -46,13 +31,21 @@ class BulkDiscount < ApplicationRecord
     .where.not(id: self)
   end
 
+  def has_pending_invoices?
+    unless self.find_pending_invoices.empty?
+      self.errors.add(:base, "Cannot modify or delete discount #{self.id} because it has been applied to a pending invoice")
+      return false
+    end
+    true
+  end
   private
-
+  
   def applicable_discount?
     unless self.find_better_discount.empty?
       #holiday discount exception
-      self.errors.add(:base, "This discount is superfluous and will not be added, try again")
+      self.errors.add(:base, "This discount is superfluous and will not be added, be more generous")
       return false
     end
   end
+
 end

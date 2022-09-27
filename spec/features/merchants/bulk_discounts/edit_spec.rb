@@ -17,6 +17,7 @@ RSpec.describe 'Bulk discount Edit' do
       visit merchant_bulk_discount_path(@merch1.id, @bulk_discount_1)
 
       click_link("Edit Bulk Discount")
+
       expect(current_path).to eq(edit_merchant_bulk_discount_path(@merch1.id, @bulk_discount_1))
     end
   end
@@ -72,12 +73,13 @@ RSpec.describe 'Bulk discount Edit' do
     context 'cannot update bulk discount if applied to an item with an in progess invoice' do
       it 'displays sad path message when attempting to update an item with in-progress invoice' do
         shady_merchant = create(:merchant)
-        discount_with_invoice = create(:bulk_discount, threshold: 2, merchant: shady_merchant)
         in_progress_invoice = create(:invoice, status: 0)
         item_with_discount = create(:item, merchant: shady_merchant)
         invoice_item_pending = create(:invoice_item, invoice: in_progress_invoice, item: item_with_discount, quantity: 4)
+        discount_with_invoice = create(:bulk_discount, threshold: 2, merchant: shady_merchant)
         visit merchant_bulk_discount_path(shady_merchant, discount_with_invoice)
         click_link("Edit Bulk Discount")
+        # click_button("Update Bulk discount")
         expect(page).to have_current_path(merchant_bulk_discount_path(shady_merchant, discount_with_invoice))
         expect(page).to have_content("Cannot update discount #{discount_with_invoice.id} because it has been applied to a pending invoice")
       end

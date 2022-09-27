@@ -96,7 +96,8 @@ RSpec.describe 'bulk discounts Index' do
             click_button("Delete")
             expect(page).to have_current_path(merchant_bulk_discounts_path(shady_merchant.id))
           end
-          expect(page).to have_content("Cannot delete discount #{discount_with_invoice.id} because it has been applied to a pending invoice")
+
+          expect(page).to have_content("Cannot modify or delete discount #{discount_with_invoice.id} because it has been applied to a pending invoice")
         end
       end
     end

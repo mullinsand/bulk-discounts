@@ -86,7 +86,7 @@ RSpec.describe 'New bulk discounts' do
       click_button 'Create Bulk discount'
 
       expect(current_path).to eq(new_merchant_bulk_discount_path(@merch1))
-      expect(page).to have_content("This discount is superfluous and will not be added, try again")
+      expect(page).to have_content("This discount is superfluous and will not be added, be more generous")
     end
 
     it 'stops the creation of discounts that have equal discount% and equal thresholds' do
@@ -99,7 +99,7 @@ RSpec.describe 'New bulk discounts' do
       click_button 'Create Bulk discount'
 
       expect(current_path).to eq(new_merchant_bulk_discount_path(@merch1))
-      expect(page).to have_content("This discount is superfluous and will not be added, try again")
+      expect(page).to have_content("This discount is superfluous and will not be added, be more generous")
     end
 
     it 'stops the creation of discounts that have lower discount% and equal thresholds' do
@@ -112,7 +112,7 @@ RSpec.describe 'New bulk discounts' do
       click_button 'Create Bulk discount'
 
       expect(current_path).to eq(new_merchant_bulk_discount_path(@merch1))
-      expect(page).to have_content("This discount is superfluous and will not be added, try again")
+      expect(page).to have_content("This discount is superfluous and will not be added, be more generous")
     end
   end
   VCR.eject_cassette

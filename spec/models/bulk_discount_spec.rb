@@ -15,24 +15,27 @@ RSpec.describe BulkDiscount, type: :model do
 
   describe "instance methods" do
     describe "#has_pending_invoices" do
-      it 'returns true if the bulk discount applies to an item on a pending invoice' do
+      it 'returns the invoice if the bulk discount applies to an item on a pending invoice' do
         shady_merchant = create(:merchant)
-        discount_with_invoice = create(:bulk_discount, threshold: 2, merchant: shady_merchant)
         in_progress_invoice = create(:invoice, status: 0)
         item_with_discount = create(:item, merchant: shady_merchant)
         invoice_item_pending = create(:invoice_item, invoice: in_progress_invoice, item: item_with_discount, quantity: 4)
+        discount_with_invoice = create(:bulk_discount, threshold: 2, merchant: shady_merchant)
 
-        expect(discount_with_invoice.has_pending_invoices).to eq(true)
+        expect(discount_with_invoice.find_pending_invoices).to eq([in_progress_invoice])
+        expect(discount_with_invoice.has_pending_invoices?).to eq(false)
+
       end
 
-      it 'returns false if the bulk discount applies to an item with a completed or cancelled invoice' do
+      it 'returns empty array if the bulk discount only applies to an item with a completed or cancelled invoice' do
         shady_merchant = create(:merchant)
-        discount_with_invoice = create(:bulk_discount, threshold: 2, merchant: shady_merchant)
         completed_invoice = create(:invoice, status: 1)
         item_with_discount = create(:item, merchant: shady_merchant)
         invoice_item_pending = create(:invoice_item, invoice: completed_invoice, item: item_with_discount, quantity: 4)
+        discount_with_invoice = create(:bulk_discount, threshold: 2, merchant: shady_merchant)
 
-        expect(discount_with_invoice.has_pending_invoices).to eq(false)
+        expect(discount_with_invoice.find_pending_invoices).to eq([])
+        expect(discount_with_invoice.has_pending_invoices?).to eq(true)
       end
     end
   end
