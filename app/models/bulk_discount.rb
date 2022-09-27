@@ -25,7 +25,7 @@ class BulkDiscount < ApplicationRecord
   # end
 
   def better_discount_already?
-    BulkDiscount.where("discount >= ? and threshold <= ?", self.discount, self.threshold).empty?
+    BulkDiscount.where("discount >= ? and threshold <= ? and merchant_id = ?", self.discount, self.threshold, self.merchant_id).empty?
   end
 
   def self.find_holiday_discount(holiday)
