@@ -10,7 +10,11 @@ class BulkDiscountsController < ApplicationController
   end
 
   def new
-    @bulk_discount = BulkDiscount.new
+    if params[:holiday]
+      @bulk_discount = BulkDiscount.new(name: "#{params[:holiday]} discount", discount: 30, threshold: 2, discount_type: params[:holiday])
+    else
+      @bulk_discount = BulkDiscount.new
+    end
   end
 
   def create
@@ -18,6 +22,7 @@ class BulkDiscountsController < ApplicationController
     bulk_discount = merchant.bulk_discounts.new(bulk_discount_params)
     if bulk_discount.better_discount_already?
       if bulk_discount.save
+        #if I want to default name the id for each bulk discount
         redirect_to merchant_bulk_discounts_path(params[:merchant_id])
       else
         redirect_to new_merchant_bulk_discount_path(params[:merchant_id])
@@ -60,7 +65,7 @@ class BulkDiscountsController < ApplicationController
 
   private
   def bulk_discount_params
-    params.require(:bulk_discount).permit(:discount, :threshold)
+    params.require(:bulk_discount).permit(:discount, :threshold, :name, :discount_type)
   end
 
 

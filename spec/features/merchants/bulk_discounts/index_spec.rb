@@ -136,5 +136,97 @@ RSpec.describe 'bulk discounts Index' do
       end
     end
   end
+
+  describe 'Holiday Discount' do
+    before :each do
+      @merch1 = create(:merchant)
+      @bulk_discount_1 = create(:bulk_discount, threshold: 100, discount: 10, merchant: @merch1)
+      @bulk_discount_2 = create(:bulk_discount, threshold: 150, discount: 11, merchant: @merch1)
+      @upcoming_vcr_holidays = [
+        {name: "Columbus Day", date: "2022-10-10"},
+        {name: "Veterans Day", date: "2022-11-11"},
+        {name: "Thanksgiving Day", date: "2022-11-24"}]
+      visit merchant_bulk_discounts_path(@merch1.id)
+    end
+    describe 'I can create new discounts based on the holidays' do
+      it 'has a button next to each holiday' do
+        within '#holidays' do
+          @upcoming_vcr_holidays.each do |holiday|
+            within "#discount_#{holiday[:date]}" do
+              expect(page).to have_button("Create Holiday Discount!")
+            end
+          end
+        end
+      end
+
+      it 'clicking button goes to a new discount form fields auto populated' do
+        @upcoming_vcr_holidays.each do |holiday|
+          within '#holidays' do
+            within "#discount_#{holiday[:date]}" do
+              click_button("Create Holiday Discount!")
+            end
+          end
+          expect(page).to have_field(:bulk_discount_name, with: "#{holiday[:name]} discount")
+          expect(page).to have_field(:bulk_discount_discount, with: 30)
+          expect(page).to have_field(:bulk_discount_threshold, with: 2)
+
+          visit merchant_bulk_discounts_path(@merch1.id)
+        end
+      end
+
+      it 'form fields can each be edited' do
+        within '#holidays' do
+          within "#discount_#{@upcoming_vcr_holidays.first[:date]}" do
+            click_button("Create Holiday Discount!")
+          end
+        end
+        fill_in :bulk_discount_name, with: "Early Halloween Discount"
+        fill_in :bulk_discount_discount, with: 40
+        fill_in :bulk_discount_threshold, with: 4
+        click_button 'Create Bulk discount'
+      end
+
+      it 'submitting form returns merchant to index page where discount is listed' do
+        within '#holidays' do
+          within "#discount_#{@upcoming_vcr_holidays.first[:date]}" do
+            click_button("Create Holiday Discount!")
+          end
+        end
+        fill_in :bulk_discount_name, with: "Early Halloween Discount"
+        fill_in :bulk_discount_discount, with: 40
+        fill_in :bulk_discount_threshold, with: 4
+        click_button 'Create Bulk discount'
+        expect(current_path).to eq(merchant_bulk_discounts_path(@merch1.id))
+        holiday_discount = BulkDiscount.last
+        within '#discounts' do
+          within "#discount_#{holiday_discount.id}" do
+            expect(page).to have_content(holiday_discount.name)
+            expect(page).to have_content(holiday_discount.threshold)
+            expect(page).to have_content(holiday_discount.discount)
+          end
+        end
+      end
+
+      it 'after creating a holiday discount, the create holiday discount like changes to a show page link for the discount' do
+        within '#holidays' do
+          within "#discount_#{@upcoming_vcr_holidays.first[:date]}" do
+            click_button("Create Holiday Discount!")
+          end
+        end
+        fill_in :bulk_discount_name, with: "Early Halloween Discount"
+        fill_in :bulk_discount_discount, with: 40
+        fill_in :bulk_discount_threshold, with: 4
+        click_button 'Create Bulk discount'
+        holiday_discount = BulkDiscount.last
+        within '#holidays' do
+          within "#discount_#{@upcoming_vcr_holidays.first[:date]}" do
+            click_link "View discount"
+            expect(current_path).to eq(merchant_bulk_discount_path(@merch1.id, holiday_discount))
+          end
+        end
+      end
+    end
+
+  end
   VCR.eject_cassette
 end
