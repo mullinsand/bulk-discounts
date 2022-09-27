@@ -38,7 +38,7 @@ RSpec.describe BulkDiscount, type: :model do
   end
 
   describe "class methods" do
-    describe "#better_discount_already?" do
+    describe "#find_better_discount" do
       before :each do
         @merch1 = create(:merchant)
         @bulk_discount_1 = create(:bulk_discount, threshold: 4, discount: 40, merchant: @merch1)
@@ -49,42 +49,51 @@ RSpec.describe BulkDiscount, type: :model do
       end
       it 'only looks for bulk discounts for a single merchant' do
         bulk_discount_3 = BulkDiscount.new(threshold: 5, discount: 41, merchant: @merch1)
-        expect(bulk_discount_3.better_discount_already?).to eq(true)
+        expect(bulk_discount_3.valid?).to eq(true)
       end
       
       it 'checks for discounts have equal discount% and higher thresholds' do
         bulk_discount_3 = BulkDiscount.new(threshold: 5, discount: 40, merchant: @merch1)
-        expect(bulk_discount_3.better_discount_already?).to eq(false)
+        expect(bulk_discount_3.valid?).to eq(false)
       end
 
       it 'checks for discounts have equal discount% and equal thresholds' do
         bulk_discount_3 = BulkDiscount.new(threshold: 4, discount: 40, merchant: @merch1)
-        expect(bulk_discount_3.better_discount_already?).to eq(false)
+        expect(bulk_discount_3.valid?).to eq(false)
       end
 
       it 'checks for discounts have lower discount% and equl thresholds' do
         bulk_discount_3 = BulkDiscount.new(threshold: 4, discount: 39, merchant: @merch1)
-        expect(bulk_discount_3.better_discount_already?).to eq(false)
+        expect(bulk_discount_3.valid?).to eq(false)
       end
   
       context 'if no already made discounts are better' do
         it "returns false" do
           bulk_discount_3 = BulkDiscount.new(threshold: 5, discount: 41, merchant: @merch1)
-          expect(bulk_discount_3.better_discount_already?).to eq(true)
+          expect(bulk_discount_3.valid?).to eq(true)
+        end
+      end
+
+      context 'if the discount_type is not normal (ie holiday)' do
+        it 'is not included in the search for a better discount' do
+          christmas_discount = create(:bulk_discount, discount: 50, threshold: 5, discount_type: "Christmas", merchant: @merch1)
+          bulk_discount_3 = BulkDiscount.new(threshold: 5, discount: 41, merchant: @merch1)
+          expect(bulk_discount_3.valid?).to eq(true)
         end
       end
     end
+
     describe "#find_holiday_discount" do
       it 'searches the discount field for the matching holiday related bulk discount' do
         merch1 = create(:merchant)
         bulk_discount_3 = create(:bulk_discount, discount: 5, threshold: 3, merchant: merch1)
         bulk_discount_4 = create(:bulk_discount, discount: 6, threshold: 4, merchant: merch1)
-        christmas_discount_1 = create(:bulk_discount, discount: 50, threshold: 5, discount_type: "Christmas", merchant: merch1)
-        thanksgiving_discount_2 = create(:bulk_discount, discount: 50, threshold: 5, discount_type: "Thanksgiving", merchant: merch1)
+        christmas_discount = create(:bulk_discount, discount: 50, threshold: 5, discount_type: "Christmas", merchant: merch1)
+        thanksgiving_discount = create(:bulk_discount, discount: 50, threshold: 5, discount_type: "Thanksgiving", merchant: merch1)
         bulk_discount_5 = create(:bulk_discount)
 
-        expect(merch1.bulk_discounts.find_holiday_discount("Christmas")).to eq(christmas_discount_1)
-        expect(merch1.bulk_discounts.find_holiday_discount("Thanksgiving")).to eq(thanksgiving_discount_2)
+        expect(merch1.bulk_discounts.find_holiday_discount("Christmas")).to eq(christmas_discount)
+        expect(merch1.bulk_discounts.find_holiday_discount("Thanksgiving")).to eq(thanksgiving_discount)
       end
 
       context "if no holidays match argument" do
@@ -92,12 +101,13 @@ RSpec.describe BulkDiscount, type: :model do
           merch1 = create(:merchant)
           bulk_discount_3 = create(:bulk_discount, discount: 5, threshold: 3, merchant: merch1)
           bulk_discount_4 = create(:bulk_discount, discount: 6, threshold: 4, merchant: merch1)
-          christmas_discount_1 = create(:bulk_discount, discount: 50, threshold: 5, discount_type: "Christmas", merchant: merch1)
-          thanksgiving_discount_2 = create(:bulk_discount, discount: 50, threshold: 5, discount_type: "Thanksgiving", merchant: merch1)
+          christmas_discount = create(:bulk_discount, discount: 50, threshold: 5, discount_type: "Christmas", merchant: merch1)
+          thanksgiving_discount = create(:bulk_discount, discount: 50, threshold: 5, discount_type: "Thanksgiving", merchant: merch1)
           bulk_discount_5 = create(:bulk_discount)
           expect(merch1.bulk_discounts.find_holiday_discount("Halloween")).to eq(nil)
         end
       end
+
     end
   end
 end

@@ -5,9 +5,9 @@ RSpec.describe 'Bulk discount Edit' do
   before :each do
     @merch1 = create(:merchant)
     @bulk_discount_1 = create(:bulk_discount, discount: 75, threshold: 500, merchant: @merch1)
-    @bulk_discount_2 = create(:bulk_discount, merchant: @merch1)
-    @bulk_discount_3 = create(:bulk_discount, merchant: @merch1)
-    @bulk_discount_4 = create(:bulk_discount, merchant: @merch1)
+    @bulk_discount_2 = create(:bulk_discount, discount: 5, threshold: 100, merchant: @merch1)
+    @bulk_discount_3 = create(:bulk_discount, discount: 10, threshold: 200, merchant: @merch1)
+    @bulk_discount_4 = create(:bulk_discount, discount: 15, threshold: 300, merchant: @merch1)
     @bulk_discount_5 = create(:bulk_discount)
   end
 

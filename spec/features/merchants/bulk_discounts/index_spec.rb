@@ -5,10 +5,10 @@ RSpec.describe 'bulk discounts Index' do
   describe "A list of all bulk discount names" do
     it 'shows the names of each bulk discount' do
       merch1 = create(:merchant)
-      bulk_discount_1 = create(:bulk_discount, merchant: merch1)
-      bulk_discount_2 = create(:bulk_discount, merchant: merch1)
-      bulk_discount_3 = create(:bulk_discount, merchant: merch1)
-      bulk_discount_4 = create(:bulk_discount, merchant: merch1)
+      bulk_discount_1 = create(:bulk_discount, discount: 1, threshold: 50,merchant: merch1)
+      bulk_discount_2 = create(:bulk_discount, discount: 5, threshold: 100, merchant: merch1)
+      bulk_discount_3 = create(:bulk_discount, discount: 10, threshold: 200, merchant: merch1)
+      bulk_discount_4 = create(:bulk_discount, discount: 15, threshold: 300, merchant: merch1)
       bulk_discount_5 = create(:bulk_discount)
 
 
@@ -28,10 +28,10 @@ RSpec.describe 'bulk discounts Index' do
 
     it 'has each bulk discount is a link to the bulk discount show page' do
       merch1 = create(:merchant)
-      bulk_discount_1 = create(:bulk_discount, merchant: merch1)
-      bulk_discount_2 = create(:bulk_discount, merchant: merch1)
-      bulk_discount_3 = create(:bulk_discount, merchant: merch1)
-      bulk_discount_4 = create(:bulk_discount, merchant: merch1)
+      bulk_discount_1 = create(:bulk_discount, discount: 1, threshold: 50,merchant: merch1)
+      bulk_discount_2 = create(:bulk_discount, discount: 5, threshold: 100, merchant: merch1)
+      bulk_discount_3 = create(:bulk_discount, discount: 10, threshold: 200, merchant: merch1)
+      bulk_discount_4 = create(:bulk_discount, discount: 15, threshold: 300, merchant: merch1)
       bulk_discount_5 = create(:bulk_discount)
 
       all_bulk_discounts = [bulk_discount_1, bulk_discount_2, bulk_discount_3, bulk_discount_4]
@@ -51,10 +51,10 @@ RSpec.describe 'bulk discounts Index' do
     describe 'delete bulk discount' do
       before :each do
         @merch1 = create(:merchant)
-        @bulk_discount_1 = create(:bulk_discount, merchant: @merch1)
-        @bulk_discount_2 = create(:bulk_discount, merchant: @merch1)
-        @bulk_discount_3 = create(:bulk_discount, merchant: @merch1)
-        @bulk_discount_4 = create(:bulk_discount, merchant: @merch1)
+        @bulk_discount_1 = create(:bulk_discount, discount: 1, threshold: 50,merchant: @merch1)
+        @bulk_discount_2 = create(:bulk_discount, discount: 5, threshold: 100, merchant: @merch1)
+        @bulk_discount_3 = create(:bulk_discount, discount: 10, threshold: 200, merchant: @merch1)
+        @bulk_discount_4 = create(:bulk_discount, discount: 15, threshold: 300, merchant: @merch1)
         @bulk_discount_5 = create(:bulk_discount)
 
         @all_bulk_discounts = [@bulk_discount_1, @bulk_discount_2, @bulk_discount_3, @bulk_discount_4]
@@ -105,10 +105,10 @@ RSpec.describe 'bulk discounts Index' do
   describe 'Upcoming Holidays' do
     before :each do
       @merch1 = create(:merchant)
-      @bulk_discount_1 = create(:bulk_discount, merchant: @merch1)
-      @bulk_discount_2 = create(:bulk_discount, merchant: @merch1)
-      @bulk_discount_3 = create(:bulk_discount, merchant: @merch1)
-      @bulk_discount_4 = create(:bulk_discount, merchant: @merch1)
+      @bulk_discount_1 = create(:bulk_discount, discount: 1, threshold: 50,merchant: @merch1)
+      @bulk_discount_2 = create(:bulk_discount, discount: 5, threshold: 100, merchant: @merch1)
+      @bulk_discount_3 = create(:bulk_discount, discount: 10, threshold: 200, merchant: @merch1)
+      @bulk_discount_4 = create(:bulk_discount, discount: 15, threshold: 300, merchant: @merch1)
       @bulk_discount_5 = create(:bulk_discount)
       
       @upcoming_vcr_holidays = [

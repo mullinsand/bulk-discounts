@@ -122,7 +122,7 @@ RSpec.describe Item, type: :model do
   
         @bulk_discount_1 = create(:bulk_discount, threshold: 2, discount: 20,merchant: @merchant)
         @bulk_discount_2 = create(:bulk_discount, threshold: 4, discount: 40,merchant: @merchant)
-        @bulk_discount_3 = create(:bulk_discount, threshold: 6, discount: 40,merchant: @merchant)
+        @bulk_discount_3 = create(:bulk_discount, threshold: 6, discount: 41,merchant: @merchant)
         @bulk_discount_4 = create(:bulk_discount, threshold: 8, discount: 50,merchant: @merchant)
       
         @items = create_list(:item, 3, merchant: @merchant)
