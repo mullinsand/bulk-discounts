@@ -5,10 +5,10 @@ RSpec.describe 'bulk discounts show' do
   describe "Show page has the discount and threshold for that bulk discount" do
     it 'shows discount and threshold for that bulk discount' do
       merch1 = create(:merchant)
-      bulk_discount_1 = create(:bulk_discount, merchant: merch1)
-      bulk_discount_2 = create(:bulk_discount, merchant: merch1)
-      bulk_discount_3 = create(:bulk_discount, merchant: merch1)
-      bulk_discount_4 = create(:bulk_discount, merchant: merch1)
+      bulk_discount_1 = create(:bulk_discount, discount: 1, threshold: 50,merchant: merch1)
+      bulk_discount_2 = create(:bulk_discount, discount: 5, threshold: 100, merchant: merch1)
+      bulk_discount_3 = create(:bulk_discount, discount: 10, threshold: 200, merchant: merch1)
+      bulk_discount_4 = create(:bulk_discount, discount: 15, threshold: 300, merchant: merch1)
       bulk_discount_5 = create(:bulk_discount)
 
 
